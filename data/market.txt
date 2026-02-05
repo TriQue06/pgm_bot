@@ -1,19 +1,38 @@
-# <:canta:1469018374930698240> KİTLER
-## <:kit:1469016921478266880> Elmas
-- Kod: ``elmas``
-- Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
-## <:kit:1469016921478266880> Altın
-- Kod: ``altin``
-- Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
-## <:kit:1469016921478266880> Okçu
-- Kod: ``okcu``
-- Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
-## <:kit:1469016921478266880> Nether
-- Kod: ``nether``
-- Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
-## <:kit:1469016921478266880> Copper
-- Kod: ``copper``
-- Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
-## <:kit:1469016921478266880> Iron
-- Kod: ``iron``
-- Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
+# 🧺 <:canta:1469018374930698240> PGM MARKET
+
+━━━━━━━━━━━━━━━━━━━
+## 🧩 <:kit:1469016921478266880> KİTLER
+━━━━━━━━━━━━━━━━━━━
+
+### 💎 Elmas Kiti
+- 🆔 Kod: `elmas`
+- 💰 Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
+
+### 🥇 Altın Kiti
+- 🆔 Kod: `altin`
+- 💰 Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
+
+### 🏹 Okçu Kiti
+- 🆔 Kod: `okcu`
+- 💰 Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
+
+### 🔥 Nether Kiti
+- 🆔 Kod: `nether`
+- 💰 Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
+
+### 🧱 Copper Kiti
+- 🆔 Kod: `copper`
+- 💰 Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
+
+### ⚙️ Iron Kiti
+- 🆔 Kod: `iron`
+- 💰 Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
+
+━━━━━━━━━━━━━━━━━━━
+## 🌟 PGM PREMIUM
+━━━━━━━━━━━━━━━━━━━
+
+### 👑 PGM Premium Üyelik
+- 🚀 Özel ayrıcalıklar
+- 🛍️ Premium özelliklere erişim
+- 💰 Ücret: <:pgmcoin:1469015534493368442> **200 PGM Coin**
