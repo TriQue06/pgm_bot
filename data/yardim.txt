@@ -1,5 +1,5 @@
 # :blue_book: PGM BOT - Yardım SELAM ÇET PGM
 - :blue_square: `SELAM ÇET BEN PGM!envanter` → Envanterini gösterir.
-- :blue_square: `SELAM ÇET BEN YARAK KÜREK PGM!satinal <kit>` → Kit satın alırsın
+- :blue_square: `SELAM ÇET BEN SSSSYARAK KÜREK PGM!satinal <kit>` → Kit satın alırsın
 - :blue_square: `!kSSSSaZORTtil <mc_adi> <kit>/yok` → Turnuvaya katılırsın
 - :warning: **Katılım yaptıktan sonra kit envanterinden düşer, bu işlemi geri alamazsın.**
