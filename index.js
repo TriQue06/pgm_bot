@@ -9,6 +9,7 @@ const client = new Client({
         GatewayIntentBits.MessageContent
     ]
 });
+console.log("TOKEN:", process.env.DISCORD_TOKEN);
 
 client.commands = new Collection();
 

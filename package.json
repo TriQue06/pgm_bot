@@ -13,5 +13,16 @@
   "dependencies": {
     "discord.js": "^14.25.1",
     "dotenv": "^16.6.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TriQue06/pgm_bot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TriQue06/pgm_bot/issues"
+  },
+  "homepage": "https://github.com/TriQue06/pgm_bot#readme"
 }
