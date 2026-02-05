@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require("discord.js");
 const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
 
-// Emojiler
+// Emojiler (Senin verdiğin ID'ler)
 const EMOJIS = {
     pgmcoin: "<:pgmcoin:1469015534493368442>",
     ruby: "<:ruby:1469015535911178280>",
@@ -25,46 +25,40 @@ module.exports = {
 
         const p = data[user.id];
 
-        // Kit listesi: Boşsa uyarı, doluysa alt alta sırala
+        // Kit Listesi Hazırlama
         const kitList = Object.entries(p.kits).length > 0
             ? Object.entries(p.kits)
-                .map(([k, v]) => `> ${EMOJIS.kit} **${k.toUpperCase()}** • \`${v} Adet\``)
+                .map(([k, v]) => `${EMOJIS.kit} **${k}** (x${v})`)
                 .join("\n")
-            : "> _Çantanızda hiç kit bulunmuyor._";
+            : "_Çantanız boş._";
+
+        // Cüzdan Listesi Hazırlama (İstediğin Sıralama)
+        const walletList = [
+            `${EMOJIS.pgmcoin} **PGM Coin:** ${p.pgmcoin}`,
+            `${EMOJIS.ruby} **Yakut:** ${p.ruby}`,
+            `${EMOJIS.diamond} **Elmas:** ${p.diamond}`,
+            `${EMOJIS.crystal} **Kristal:** ${p.crystal}`
+        ].join("\n");
 
         const embed = new EmbedBuilder()
-            .setColor(0x2B2D31) // Koyu gri (Discord Dark Mode uyumlu)
-            .setAuthor({ name: `${user.username} • Oyuncu Profili`, iconURL: user.displayAvatarURL() })
-            .setThumbnail(user.displayAvatarURL({ dynamic: true, size: 512 })) // Avatarı netleştirdik
-            .setDescription(`## ${EMOJIS.cuzdan} Hesap Özeti\nKullanıcının anlık varlık durumu aşağıdadır.`) // Büyük Başlık
+            .setColor(0x2B2D31) // Koyu Gri
+            .setAuthor({ name: `${user.username} Envanteri`, iconURL: user.displayAvatarURL() })
+            .setThumbnail(user.displayAvatarURL({ dynamic: true }))
             .addFields(
+                // Bölüm 1: Cüzdan
                 { 
-                    name: "━━━━━━━━━━━━━━━━━━━━━", 
-                    value: `\n${EMOJIS.pgmcoin} **PGM Coin** \n# ${p.pgmcoin}\n`, // "#" ile sayıyı dev yaptık
-                    inline: true 
-                },
-                { 
-                    name: "━━━━━━━━━━━━━━━━━━━━━", 
-                    value: `\n${EMOJIS.ruby} **Ruby** \n# ${p.ruby}\n`,
-                    inline: true 
-                },
-                { 
-                    name: "━━━━━━━━━━━━━━━━━━━━━", // Boşluk yaratmak için
-                    value: `**Diğer Değerli Madenler**\n` +
-                           `${EMOJIS.diamond} **Elmas:** \`${p.diamond}\`\n` +
-                           `${EMOJIS.crystal} **Kristal:** \`${p.crystal}\``, 
+                    name: `${EMOJIS.cuzdan} Cüzdan`, 
+                    value: walletList, 
                     inline: false 
                 },
+                // Bölüm 2: Kitler
                 { 
-                    name: `\n${EMOJIS.canta} SAHİP OLUNAN KİTLER`, 
-                    value: `\`\`\`fix\n${kitList.replace(/> /g, "")}\n\`\`\``, // Kod bloğu içine alarak genişlettik
+                    name: `${EMOJIS.canta} Kitler`, 
+                    value: kitList, 
                     inline: false 
                 }
             )
-            // BURASI ÖNEMLİ: Büyük görsel ekleyerek embed'i uzatıyoruz.
-            // Buraya sunucuna özel bir banner linki koymalısın.
-            .setImage("[https://media.discordapp.net/attachments/1079052924194787378/1148644535354085446/standard_2.gif?width=800&height=200](https://media.discordapp.net/attachments/1079052924194787378/1148644535354085446/standard_2.gif?width=800&height=200)") 
-            .setFooter({ text: "PGM Economy System • 2024", iconURL: client.user.displayAvatarURL() })
+            .setFooter({ text: "PGM Economy", iconURL: client.user.displayAvatarURL() })
             .setTimestamp();
 
         msg.channel.send({ embeds: [embed] });
