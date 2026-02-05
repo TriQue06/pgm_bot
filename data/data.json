@@ -1,9 +1,16 @@
 {
   "1088510460778782831": {
-    "pgmcoin": 0,
+    "pgmcoin": 10019321,
     "ruby": 0,
     "diamond": 0,
     "crystal": 0,
+    "kits": {}
+  },
+  "540610265084067851": {
+    "pgmcoin": 0,
+    "ruby": 0,
+    "diamond": 0,
+    "crystal": 100,
     "kits": {}
   }
 }
