@@ -1,5 +1,5 @@
 # <:envanterkasa:1469403053097619578> KASALAR
-## Önce: `!satinal <kasa>`, sonra: `!kasa <kasa>`
+## Satın almak için: `!satinal <kasa>`, açmak için: `!kasa <kasa>`
 ## <:ruby:1469015535911178280> **3 Yakut** → <:bronzkasa:1469400728442245347> Bronz Kasa `bronzkasa`
 - İhtimaller:
   - <:pgmcoin:1469015534493368442> **PGM Coin**, <:kit:1469016921478266880> **UHC kitleri**

@@ -5,9 +5,21 @@
     "diamond": 0,
     "crystal": 0,
     "kits": {
+      "madenci": 500
+    },
+    "crates": {
+      "altinkasa": 3
+    },
+    "lastDaily": 1770412197146
+  },
+  "540610265084067851": {
+    "pgmcoin": 0,
+    "ruby": 0,
+    "diamond": 0,
+    "crystal": 0,
+    "kits": {
       "nisanci": 1
     },
-    "crates": {},
-    "lastDaily": 1770412197146
+    "crates": {}
   }
 }

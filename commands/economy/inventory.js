@@ -16,6 +16,31 @@ const EMOJIS = {
     envanterkasa: "<:envanterkasa:1469403053097619578>"
 };
 
+// Görünen İsimler (Çeviri Listesi)
+const DISPLAY_NAMES = {
+    // Kasalar
+    bronzkasa: "Bronz Kasa",
+    gumuskasa: "Gümüş Kasa",
+    altinkasa: "Altın Kasa",
+    
+    // Kitler
+    madenci: "Madenci",
+    nisanci: "Nişancı",
+    demirci: "Demirci",
+    buyucu: "Büyücü",
+    kral: "Kral"
+};
+
+// Yardımcı Fonksiyon: İsmi Formatla
+function formatName(key) {
+    // 1. Listede varsa oradan al
+    if (DISPLAY_NAMES[key.toLowerCase()]) {
+        return DISPLAY_NAMES[key.toLowerCase()];
+    }
+    // 2. Yoksa baş harfini büyüt (örn: elmas -> Elmas)
+    return key.charAt(0).toUpperCase() + key.slice(1);
+}
+
 module.exports = {
     name: "!envanter",
     aliases: ["!inv", "!canta", "!profile", "!e"],
@@ -31,15 +56,15 @@ module.exports = {
 
         // 1. Kit Listesi
         const kitList = Object.entries(p.kits).length > 0
-            ? Object.entries(p.kits).map(([k, v]) => `### ${EMOJIS.kit} ${k} (x${v})`).join("\n")
+            ? Object.entries(p.kits).map(([k, v]) => `### ${EMOJIS.kit} ${formatName(k)} (x${v})`).join("\n")
             : "";
 
-        // 2. Kasa Listesi (DÜZELTİLDİ: Her kasa kendi emojisini alır)
+        // 2. Kasa Listesi
         const crateList = (p.crates && Object.entries(p.crates).length > 0)
             ? Object.entries(p.crates).map(([k, v]) => {
                 // Eğer EMOJIS içinde kasanın adıyla bir emoji varsa onu kullan, yoksa envanterkasa kullan
                 const emoji = EMOJIS[k.toLowerCase()] || EMOJIS.envanterkasa;
-                return `### ${emoji} ${k} (x${v})`;
+                return `### ${emoji} ${formatName(k)} (x${v})`;
             }).join("\n")
             : "";
 
@@ -51,10 +76,22 @@ module.exports = {
             `### ${EMOJIS.crystal} Kristal: ${p.crystal}`
         ].join("\n");
 
-        const descriptionContent = 
-            `# ${EMOJIS.cuzdan} Envanter\n${walletList}\n\n` + 
-            `# ${EMOJIS.envanterkasa} Kasalar\n${crateList}\n\n` +
-            `# ${EMOJIS.canta} Kitler\n${kitList}`;
+        // Embed İçeriğini Oluştur
+        let descriptionContent = `# ${EMOJIS.cuzdan} Envanter\n${walletList}\n\n`;
+
+        // Eğer kasa varsa listeye ekle
+        if (crateList) {
+            descriptionContent += `# ${EMOJIS.envanterkasa} Kasalar\n${crateList}\n\n`;
+        } else {
+            descriptionContent += `# ${EMOJIS.envanterkasa} Kasalar\n### _Kasa bulunmuyor._\n\n`;
+        }
+
+        // Eğer kit varsa listeye ekle
+        if (kitList) {
+            descriptionContent += `# ${EMOJIS.canta} Kitler\n${kitList}`;
+        } else {
+            descriptionContent += `# ${EMOJIS.canta} Kitler\n### _Kit bulunmuyor._`;
+        }
 
         const embed = new EmbedBuilder()
             .setColor(0x2B2D31)
