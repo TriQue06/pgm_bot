@@ -1,1 +1,14 @@
-{}
+{
+  "madenci": {
+    "price": 20,
+    "currency": "pgmcoin"
+  },
+  "nisanci": {
+    "price": 7,
+    "currency": "ruby"
+  },
+  "demirci": {
+    "price": 3,
+    "currency": "diamond"
+  }
+}
