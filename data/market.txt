@@ -1,3 +1,15 @@
+<<<<<<< Updated upstream
+# <:canta:1469018374930698240> KİTLER
+## <:kit:1469016921478266880> Madenci
+- Kod: ``madenci``
+- Ücret: <:pgmcoin:1469015534493368442> **50 PGM Coin**
+## <:kit:1469016921478266880> Nişancı
+- Kod: ``nisanci``
+- Ücret: <:ruby:1469015535911178280> **7 Yakut**
+## <:kit:1469016921478266880> Demirci
+- Kod: ``demirci``
+- Ücret: <:diamond:1469015532836491274> **3 Elmas**
+=======
 # 🧺 <:canta:1469018374930698240> PGM MARKET
 
 ━━━━━━━━━━━━━━━━━━━
@@ -36,3 +48,4 @@
 - 🚀 Özel ayrıcalıklar
 - 🛍️ Premium özelliklere erişim
 - 💰 Ücret: <:pgmcoin:1469015534493368442> **200 PGM Coin**
+>>>>>>> Stashed changes
