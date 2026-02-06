@@ -1,3 +1,11 @@
+process.on('unhandledRejection', (reason) => {
+  console.error('Unhandled Rejection:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
 require("dotenv").config();
 const fs = require("fs");
 const { Client, GatewayIntentBits, Collection, ActivityType } = require("discord.js");
@@ -28,7 +36,7 @@ for (const folder of commandFolders) {
     }
 }
 
-client.on("ready", () => {
+client.on("clientReady", () => {
     console.log(`✅ Bot giriş yaptı: ${client.user.tag}`);
     client.user.setPresence({
         activities: [{ name: '"!yardim" kullan! • PGM BOT', type: ActivityType.Custom }],
