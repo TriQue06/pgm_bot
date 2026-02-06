@@ -1,31 +1,31 @@
 {
   "madenci": {
-    "price": 10,
+    "price": 20,
     "currency": "pgmcoin",
     "type": "kit"
   },
   "nisanci": {
-    "price": 10,
+    "price": 20,
     "currency": "pgmcoin",
     "type": "kit"
   },
   "demirci": {
-    "price": 10,
+    "price": 20,
     "currency": "pgmcoin",
     "type": "kit"
   },
   "bronzkasa": {
-    "price": 1,
-    "currency": "ruby",
-    "type": "crate"
-  },
-  "gumuskasa": {
     "price": 3,
     "currency": "ruby",
     "type": "crate"
   },
+  "gumuskasa": {
+    "price": 6,
+    "currency": "ruby",
+    "type": "crate"
+  },
   "altinkasa": {
-    "price": 8,
+    "price": 9,
     "currency": "ruby",
     "type": "crate"
   }

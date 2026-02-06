@@ -4,9 +4,10 @@
 ## `!market`
 - :blue_square: `!market` → Marketi görüntüle.
   - *Kitler ve kasalar için önce markete göz at!*
-## `!satinal` ve `!kasa`
+## `!satinal`
 - :blue_square: `!satinal <kit>` → Kit satın al.
   - *Kitler tek kullanımlıktır.*
+  ## `!kasa`
 - :blue_square: `!satinal <kasa>` → Kasa satın al.
 - :blue_square: `!kasa <kasa>` → Envanterindeki kasayı aç.
 ## `!katil`

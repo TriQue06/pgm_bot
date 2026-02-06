@@ -1,16 +1,16 @@
 # <:envanterkasa:1469403053097619578> KASALAR
 ## Önce: `!satinal <kasa>`, sonra: `!kasa <kasa>`
-## <:ruby:1469015535911178280> **1 Yakut** → <:bronzkasa:1469400728442245347> Bronz Kasa `bronzkasa`
+## <:ruby:1469015535911178280> **3 Yakut** → <:bronzkasa:1469400728442245347> Bronz Kasa `bronzkasa`
 - İhtimaller:
   - <:pgmcoin:1469015534493368442> **PGM Coin**, <:kit:1469016921478266880> **UHC kitleri**
-## <:ruby:1469015535911178280> **3 Yakut** → <:gumuskasa:1469400730589724828> Gümüş Kasa `gumuskasa`
+## <:ruby:1469015535911178280> **6 Yakut** → <:gumuskasa:1469400730589724828> Gümüş Kasa `gumuskasa`
 - İhtimaller:
   - <:pgmcoin:1469015534493368442> **PGM Coin**, <:ruby:1469015535911178280> **Yakut**, <:kit:1469016921478266880> **UHC kitleri**, <:bronzkasa:1469400728442245347> **Bronz Kasa**
-## <:ruby:1469015535911178280> **8 Yakut** → <:altinkasakasa:1469400726043361443> Altın Kasa `altinkasa`
+## <:ruby:1469015535911178280> **9 Yakut** → <:altinkasakasa:1469400726043361443> Altın Kasa `altinkasa`
 - İhtimaller:
   - <:pgmcoin:1469015534493368442> **PGM Coin**, <:ruby:1469015535911178280> **Yakut**, <:kit:1469016921478266880> **UHC kitleri**, <:gumuskasa:1469400730589724828> **Gümüş Kasa**
 
 # <:canta:1469018374930698240> UHC KİTLERİ `!satinal <kit>`
-## <:kit:1469016921478266880> Madenci `madenci` • <:pgmcoin:1469015534493368442> **10 PGM Coin**
-## <:kit:1469016921478266880> Nişancı `nisanci` • <:pgmcoin:1469015534493368442> **10 PGM Coin**
-## <:kit:1469016921478266880> Demirci `demirci` • <:pgmcoin:1469015534493368442> **10 PGM Coin**
+## <:kit:1469016921478266880> Madenci `madenci` • <:pgmcoin:1469015534493368442> **20 PGM Coin**
+## <:kit:1469016921478266880> Nişancı `nisanci` • <:pgmcoin:1469015534493368442> **20 PGM Coin**
+## <:kit:1469016921478266880> Demirci `demirci` • <:pgmcoin:1469015534493368442> **20 PGM Coin**

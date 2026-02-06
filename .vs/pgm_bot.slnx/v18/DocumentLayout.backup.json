@@ -7,8 +7,28 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:data\\loot.json||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\admin\\add.js||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:commands\\admin\\add.js||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\economy\\kasa.js||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:commands\\economy\\kasa.js||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\baris\\Desktop\\pgm_bot\\data\\market.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:data\\market.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\admin\\set.js||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:commands\\admin\\set.js||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\baris\\Desktop\\pgm_bot\\data\\daily_loot.json||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:data\\daily_loot.json||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\economy\\daily.js||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:commands\\economy\\daily.js||{3B902123-F8A7-4915-9F01-361F908088D0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\economy\\buy.js||{3B902123-F8A7-4915-9F01-361F908088D0}",
@@ -21,10 +41,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\baris\\Desktop\\pgm_bot\\data\\market.json||{3B902123-F8A7-4915-9F01-361F908088D0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:data\\market.json||{3B902123-F8A7-4915-9F01-361F908088D0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\baris\\Desktop\\pgm_bot\\data\\market.txt||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:data\\market.txt||{8B382828-6202-11D1-8870-0000F87579D2}"
     }
   ],
   "DocumentGroupContainers": [
@@ -34,8 +50,47 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 3,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "set.js",
+              "DocumentMoniker": "C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\admin\\set.js",
+              "RelativeDocumentMoniker": "commands\\admin\\set.js",
+              "ToolTip": "C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\admin\\set.js",
+              "RelativeToolTip": "commands\\admin\\set.js",
+              "ViewState": "AgIAAAQAAAAAAAAAAAAkwEQAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-02-06T20:48:34.633Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "add.js",
+              "DocumentMoniker": "C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\admin\\add.js",
+              "RelativeDocumentMoniker": "commands\\admin\\add.js",
+              "ToolTip": "C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\admin\\add.js",
+              "RelativeToolTip": "commands\\admin\\add.js",
+              "ViewState": "AgIAABsAAAAAAAAAAAAkwEMAAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-02-06T20:48:26.149Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "daily_loot.json",
+              "DocumentMoniker": "C:\\Users\\baris\\Desktop\\pgm_bot\\data\\daily_loot.json",
+              "RelativeDocumentMoniker": "data\\daily_loot.json",
+              "ToolTip": "C:\\Users\\baris\\Desktop\\pgm_bot\\data\\daily_loot.json",
+              "RelativeToolTip": "data\\daily_loot.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2026-02-06T20:41:07.168Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
@@ -44,14 +99,27 @@
               "RelativeDocumentMoniker": "data\\loot.json",
               "ToolTip": "C:\\Users\\baris\\Desktop\\pgm_bot\\data\\loot.json",
               "RelativeToolTip": "data\\loot.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAABFAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAABNAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2026-02-06T20:20:55.738Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 6,
+              "Title": "daily.js",
+              "DocumentMoniker": "C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\economy\\daily.js",
+              "RelativeDocumentMoniker": "commands\\economy\\daily.js",
+              "ToolTip": "C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\economy\\daily.js",
+              "RelativeToolTip": "commands\\economy\\daily.js",
+              "ViewState": "AgIAAEYAAAAAAAAAAAAmwG4AAAACAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-02-06T20:33:49.582Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
               "Title": "yardim.txt",
               "DocumentMoniker": "C:\\Users\\baris\\Desktop\\pgm_bot\\data\\yardim.txt",
               "RelativeDocumentMoniker": "data\\yardim.txt",
@@ -59,25 +127,24 @@
               "RelativeToolTip": "data\\yardim.txt",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
-              "WhenOpened": "2026-02-06T20:07:19.529Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-06T20:07:19.529Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "kasa.js",
               "DocumentMoniker": "C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\economy\\kasa.js",
               "RelativeDocumentMoniker": "commands\\economy\\kasa.js",
               "ToolTip": "C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\economy\\kasa.js",
               "RelativeToolTip": "commands\\economy\\kasa.js",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGkAAAACAAAAAAAAAA==",
+              "ViewState": "AgIAAE0AAAAAAAAAAAAmwHUAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
               "WhenOpened": "2026-02-06T20:01:52.411Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 7,
               "Title": "buy.js",
               "DocumentMoniker": "C:\\Users\\baris\\Desktop\\pgm_bot\\commands\\economy\\buy.js",
               "RelativeDocumentMoniker": "commands\\economy\\buy.js",
@@ -85,25 +152,24 @@
               "RelativeToolTip": "commands\\economy\\buy.js",
               "ViewState": "AgIAABgAAAAAAAAAAAAkwEAAAAACAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
-              "WhenOpened": "2026-02-06T20:00:12.227Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-06T20:00:12.227Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 3,
               "Title": "market.txt",
               "DocumentMoniker": "C:\\Users\\baris\\Desktop\\pgm_bot\\data\\market.txt",
               "RelativeDocumentMoniker": "data\\market.txt",
               "ToolTip": "C:\\Users\\baris\\Desktop\\pgm_bot\\data\\market.txt",
               "RelativeToolTip": "data\\market.txt",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAlAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAACzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
               "WhenOpened": "2026-02-06T19:13:12.075Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 9,
               "Title": "market.json",
               "DocumentMoniker": "C:\\Users\\baris\\Desktop\\pgm_bot\\data\\market.json",
               "RelativeDocumentMoniker": "data\\market.json",
@@ -111,8 +177,7 @@
               "RelativeToolTip": "data\\market.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-02-06T19:11:29.803Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-02-06T19:11:29.803Z"
             }
           ]
         }

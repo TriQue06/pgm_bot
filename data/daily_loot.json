@@ -8,20 +8,26 @@
   { 
     "type": "crate", 
     "name": "gumuskasa", 
+    "amount": 5, 
+    "chance": 
+  },
+  { 
+    "type": "crate", 
+    "name": "altinkasa", 
     "amount": 1, 
-    "chance": 10 
+    "chance": 
   },
   { 
     "type": "currency", 
     "name": "pgmcoin", 
-    "min": 2, 
-    "max": 6, 
+    "min": 1, 
+    "max": 2, 
     "chance": 100 
   },
   { 
     "type": "currency", 
     "name": "ruby", 
-    "min": 1, 
+    "min": 2, 
     "max": 3, 
     "chance": 25 
   }
