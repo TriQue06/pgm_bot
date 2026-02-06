@@ -17,10 +17,8 @@ module.exports = {
             .setTitle(`${user.username}#${user.discriminator} Profil`)
             .setThumbnail(user.displayAvatarURL({ dynamic: true }))
             .addFields(
-                { name: "Kullanıcı ID", value: user.id, inline: true },
                 { name: "PGM Premium", value: isPremium ? "✅ Var" : "❌ Yok", inline: true },
                 { name: "Sunucuya Katılım", value: `<t:${Math.floor(joinedAt.getTime() / 1000)}:R>`, inline: true },
-                { name: "Hesap Oluşturulma", value: `<t:${Math.floor(user.createdAt.getTime() / 1000)}:R>`, inline: true }
             )
             .setFooter({ text: `İsteyen: ${msg.author.tag}`, iconURL: msg.author.displayAvatarURL({ dynamic: true }) })
             .setTimestamp();
