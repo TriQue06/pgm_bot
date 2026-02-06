@@ -1,5 +1,5 @@
 module.exports = {
-    name: "bilgi",
+    name: "!bilgi",
     description: "PGM Bot hakkında bilgi verir",
 
     execute(message) {
