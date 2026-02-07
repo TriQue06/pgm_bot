@@ -49,7 +49,8 @@ module.exports = {
 
         // 1. Kasa Kontrolü
         if (!userCrates[crateType] || userCrates[crateType] <= 0) {
-            return msg.reply(`❌ Envanterinde hiç **${EMOJIS[crateType]} ${crateType}** yok!`);
+            return msg.reply(`❌ Envanterinde hiç **${EMOJIS[crateType]} ${crateType}** yok! Kasa almak için \`!market\``);
+
         }
 
         // 2. Loot Tablosu Kontrolü
