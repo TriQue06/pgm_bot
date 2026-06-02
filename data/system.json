@@ -1,12 +1,27 @@
 {
-  "cuzdan": { "name": "Cüzdan", "emoji": "<:cuzdan:1470834247496372317>" },
-  "canta": { "name": "Kitler", "emoji": "<:canta:1469018374930698240>" },
-  "envanterkasa": { "name": "Kasalar", "emoji": "<:envanterkasa:1469403053097619578>" },
-  "check": { "emoji": "<:check:1469662282278764638>" },
-  "negative": { "emoji": "<:negativecheck:1469662284224925727>" },
-
-  "pgmcoin": { "name": "PGM Coin", "emoji": "<:pgmcoin:1469015534493368442>", "currency": true },
-  "cevher": { "name": "Cevher", "emoji": "<:pgmgem:1470767961831637144>", "currency": true },
-  "elmas": { "name": "Elmas", "emoji": "<:diamond:1469015532836491274>", "currency": true },
-  "yeni_birim": { "name": "Yeni Birim", "emoji": "<:crystal:1469015530760569058>", "currency": true }
+  "inventory_ui": {
+    "cuzdan": { "name": "Cüzdan", "emoji": "<:cuzdan:1470834247496372317>" },
+    "envanterkasa": { "name": "Kasalar", "emoji": "<:envanterkasa:1469403053097619578>" },
+    "canta": { "name": "Kitler", "emoji": "<:canta:1469018374930698240>" }
+  },
+  "currencies": {
+    "pgmcoin": { "name": "PGM Coin", "emoji": "<:pgmcoin:1469015534493368442>" },
+    "elmas": { "name": "Elmas", "emoji": "<:diamond:1469015532836491274>" }
+  },
+  "crates": {
+    "bronzkasa": { "name": "Bronz Kasa", "emoji": "<:bronzkasa:1469400728442245347>" },
+    "gumuskasa": { "name": "Gümüş Kasa", "emoji": "<:gumuskasa:1469400730589724828>" },
+    "altinkasa": { "name": "Altın Kasa", "emoji": "<:altinkasa:1469400726043361443>" },
+    "ametistkasa": { "name": "Ametist Kasa", "emoji": "<:envanterkasa:1511470372581675129>" }
+  },
+  "kits": {
+    "altinkalp": { "name": "Altın Kalp Kiti", "emoji": "<:kit:1469016921478266880>" },
+    "madenci": { "name": "Madenci Kiti", "emoji": "<:kit:1469016921478266880>" },
+    "yagmaci": { "name": "Yağmacı Kiti", "emoji": "<:kit:1469016921478266880>" },
+    "nisanci": { "name": "Nişancı Kiti", "emoji": "<:kit:1469016921478266880>" }
+  },
+  "ui": {
+    "check": { "emoji": "<:check:1469662282278764638>" },
+    "negative": { "emoji": "<:negativecheck:1469662284224925727>" }
+  }
 }

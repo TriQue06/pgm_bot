@@ -39,12 +39,10 @@ function ensureUser(data, userId) {
         };
     }
 
-    // system.json'da "currency": true olan HER ŞEYİ cüzdana otomatik açar
-    for (const [key, value] of Object.entries(system)) {
-        if (value.currency === true) {
-            if (data[userId][key] === undefined) {
-                data[userId][key] = 0;
-            }
+    const currencies = system.currencies || {};
+    for (const key of Object.keys(currencies)) {
+        if (data[userId][key] === undefined) {
+            data[userId][key] = 0;
         }
     }
 

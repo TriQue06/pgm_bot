@@ -1,75 +1,63 @@
 const { EmbedBuilder } = require("discord.js");
 const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
+const cfg = require("../../utils/configLoader"); // CFG yapısı eklendi
 
-const COOLDOWN = 6 * 60 * 60 * 1000; // 6 saat
+const COOLDOWN = 1 * 1000; // Test için 1 saniye olarak güncellendi
 
 module.exports = {
-    name: "günlük", // index.js prefix kontrolü için başındaki "!" işaretini kaldırdık
+    name: "günlük",
     aliases: ["gunluk", "daily"],
     async execute(client, msg, args) {
         const data = loadJson("data.json");
-        const system = loadJson("system.json");
-        const prices = loadJson("prices.json");
-        const dailyLoot = loadJson("daily_loot.json"); // Yeni dinamik günlük ödül dosyan
+        const dailyLoot = loadJson("daily_loot.json");
 
-        const check = system["check"]?.emoji || "✅";
-        const negative = system["negative"]?.emoji || "❌";
+        // Emojiler kaldırıldı, metin tabanlı etiketler kullanıldı
+        const check = "[BAŞARILI]";
+        const negative = "[HATA]";
         const userId = msg.author.id;
 
         ensureUser(data, userId);
         const p = data[userId];
         const now = Date.now();
 
-        // Bekleme Süresi Kontrolü
         if (p.lastDaily && (now - p.lastDaily) < COOLDOWN) {
             const remaining = COOLDOWN - (now - p.lastDaily);
-            const hours = Math.floor(remaining / (1000 * 60 * 60));
-            const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor(remaining / 1000);
 
-            return msg.reply(`${negative} **Ödülünü zaten aldın!** Yeniden almana **${hours} saat ${minutes} dakika** var.`);
+            return msg.reply(`${negative} **Ödülünü zaten aldın!** Yeniden almana **${seconds} saniye** var.`);
         }
 
-        // daily_loot.json kontrolü
         if (!dailyLoot || !dailyLoot.rewards) {
-            return msg.reply(`${negative} Günlük ödül tablosu (\`daily_loot.json\`) bulunamadı veya içi boş.`);
+            return msg.reply(`${negative} Günlük ödül tablosu bulunamadı.`);
         }
 
         let rewards = [];
 
         dailyLoot.rewards.forEach(reward => {
-            // Şans oranını kontrol et
             if ((Math.random() * 100) <= reward.chance) {
-                // Rastgele miktar hesaplama
                 const amount = Math.floor(Math.random() * (reward.max - reward.min + 1)) + reward.min;
 
-                // 1. Durum: Doğrudan Para Birimi Ödülü
                 if (reward.type === "currency") {
-                    const sysEmoji = system[reward.name]?.emoji || "🪙";
-                    const sysName = system[reward.name]?.name || reward.name.toUpperCase();
-
+                    const itemName = cfg.getRaw("currencies", reward.name)?.name || reward.name;
                     p[reward.name] = (p[reward.name] || 0) + amount;
-                    rewards.push(`### ${sysEmoji} +${amount} ${sysName}`);
+                    rewards.push(`### +${amount} ${itemName}`);
                 }
-                // 2. Durum: Rastgele Kit Ödülü
                 else if (reward.type === "random_kit") {
-                    // prices.json içindeki type alanı "kit" olanları filtrele
-                    const allKits = Object.keys(prices).filter(k => prices[k].type === "kit");
+                    const allKits = Object.keys(cfg.getAll("general")); // Genel kategoriden kitleri çek
                     if (allKits.length === 0) return;
 
-                    const kitName = allKits[Math.floor(Math.random() * allKits.length)];
-                    const kitInfo = prices[kitName];
+                    const kitKey = allKits[Math.floor(Math.random() * allKits.length)];
+                    const kitInfo = cfg.getRaw("general", kitKey);
 
                     if (!p.kits) p.kits = {};
-                    p.kits[kitName] = (p.kits[kitName] || 0) + amount;
-                    rewards.push(`### ${kitInfo?.emoji || "⚔️"} +${amount} ${kitInfo?.name || kitName.toUpperCase()} Kiti`);
+                    p.kits[kitKey] = (p.kits[kitKey] || 0) + amount;
+                    rewards.push(`### +${amount} ${kitInfo?.name || kitKey} Kiti`);
                 }
-                // 3. Durum: Belirli Kasa Ödülü
                 else if (reward.type === "crate") {
-                    const info = prices[reward.name];
-
+                    const info = cfg.getRaw("crates", reward.name);
                     if (!p.crates) p.crates = {};
                     p.crates[reward.name] = (p.crates[reward.name] || 0) + amount;
-                    rewards.push(`### ${info?.emoji || "📦"} +${amount} ${info?.name || reward.name.toUpperCase()}`);
+                    rewards.push(`### +${amount} ${info?.name || reward.name}`);
                 }
             }
         });
