@@ -1,38 +1,42 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, version } = require("discord.js");
+const { loadJson } = require("../../utils/dataManager");
 const os = require("os");
 
 function createProgressBar(current, total, size = 10) {
     const percentage = current / total;
     const progress = Math.round(size * percentage);
     const emptyProgress = size - progress;
-    
+
     const progressText = '▓'.repeat(progress);
     const emptyProgressText = '░'.repeat(emptyProgress);
-    
+
     return `[${progressText}${emptyProgressText}]`;
 }
 
 module.exports = {
-    name: "!ping",
-    aliases: ["!i" ,"!info"],
+    name: "ping",
+    aliases: ["i", "info"],
     description: "Gelişmiş sistem monitörü ve bot istatistikleri.",
     async execute(client, msg, args) {
-        const sent = await msg.channel.send("🔄 **Veriler toplanıyor...**");
+        const system = loadJson("system.json");
+        const loadEmoji = system["cuzdan"]?.emoji ? "🔄" : "🔄"; // Eğer system.json'da özel yükleniyor emojisi istersen bağlayabilirsin
+
+        const sent = await msg.channel.send(`${loadEmoji} **Veriler toplanıyor...**`);
 
         const getSystemEmbed = () => {
             const latency = sent.createdTimestamp - msg.createdTimestamp;
             const apiPing = client.ws.ping;
-            
+
             const uptime = process.uptime();
             const days = Math.floor(uptime / 86400);
             const hours = Math.floor(uptime / 3600) % 24;
-            const minutes = Math.floor(uptime / 60) % 60;
+            const minutes = Math.floor((uptime / 60) % 60);
             const seconds = Math.floor(uptime % 60);
 
             const usedMemory = process.memoryUsage().rss / 1024 / 1024;
             const totalMemory = os.totalmem() / 1024 / 1024;
             const ramPercent = Math.round((usedMemory / totalMemory) * 100);
-            
+
             const cpus = os.cpus();
             const cpuModel = cpus[0].model.trim();
             const coreCount = cpus.length;
@@ -52,35 +56,35 @@ module.exports = {
 **CPU:** ${cpuModel}
 `)
                 .addFields(
-                    { 
-                        name: "📡 __Bağlantı Durumu__", 
-                        value: `**Gecikme:** \`${latency}ms\`\n**API:** \`${apiPing}ms\``, 
-                        inline: true 
+                    {
+                        name: "📡 __Bağlantı Durumu__",
+                        value: `**Gecikme:** \`${latency}ms\`\n**API:** \`${apiPing}ms\``,
+                        inline: true
                     },
-                    { 
-                        name: "🤖 __Bot İstatistikleri__", 
-                        value: `**Sunucu:** \`${guildCount}\`\n**Kullanıcı:** \`${userCount}\`\n**Kanal:** \`${channelCount}\``, 
-                        inline: true 
+                    {
+                        name: "🤖 __Bot İstatistikleri__",
+                        value: `**Sunucu:** \`${guildCount}\`\n**Kullanıcı:** \`${userCount}\`\n**Kanal:** \`${channelCount}\``,
+                        inline: true
                     },
-                    { 
-                        name: "💾 __RAM Kullanımı__", 
-                        value: `${createProgressBar(usedMemory, totalMemory)} **%${ramPercent}**\n\`${usedMemory.toFixed(2)} MB / ${(totalMemory / 1024).toFixed(2)} GB\``, 
-                        inline: false 
+                    {
+                        name: "💾 __RAM Kullanımı__",
+                        value: `${createProgressBar(usedMemory, totalMemory)} **%${ramPercent}**\n\`${usedMemory.toFixed(2)} MB / ${(totalMemory / 1024).toFixed(2)} GB\``,
+                        inline: false
                     },
-                    { 
-                        name: "⚙️ __İşlemci Detayları__", 
-                        value: `**Çekirdek:** ${coreCount} Çekirdek\n**Hız:** ${cpuSpeed} MHz`, 
-                        inline: true 
+                    {
+                        name: "⚙️ __İşlemci Detayları__",
+                        value: `**Çekirdek:** ${coreCount} Çekirdek\n**Hız:** ${cpuSpeed} MHz`,
+                        inline: true
                     },
-                    { 
-                        name: "⏳ __Aktiflik Süresi__", 
-                        value: `\`${days}g ${hours}s ${minutes}dk ${seconds}sn\``, 
-                        inline: true 
+                    {
+                        name: "⏳ __Aktiflik Süresi__",
+                        value: `\`${days}g ${hours}s ${minutes}dk ${seconds}sn\``,
+                        inline: true
                     },
-                    { 
-                        name: "📦 __Versiyonlar__", 
-                        value: `**Node:** ${process.version}\n**D.js:** v${version}`, 
-                        inline: true 
+                    {
+                        name: "📦 __Versiyonlar__",
+                        value: `**Node:** ${process.version}\n**D.js:** v${version}`,
+                        inline: true
                     }
                 )
                 .setFooter({ text: `Talep eden: ${msg.author.tag}`, iconURL: msg.author.displayAvatarURL() })

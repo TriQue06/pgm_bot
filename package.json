@@ -1,6 +1,6 @@
 {
   "name": "pgmbot",
-  "version": "0.38.1",
+  "version": "0.38.2",
   "description": "PGM ekonomi ve turnuva botu",
   "main": "index.js",
   "type": "commonjs",

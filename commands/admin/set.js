@@ -1,16 +1,16 @@
 const { PermissionFlagsBits } = require("discord.js");
 const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
-const { getItemInfo, isValidItem } = require("../../utils/itemManager");
-const { getLang } = require("../../utils/formatter");
 
 module.exports = {
-    name: "!set",
-    aliases: ["!ayarla"],
+    name: "set",
+    aliases: ["ayarla"],
     execute(client, msg, args) {
-        const check = getLang("check").emoji;
-        const negative = getLang("negative").emoji;
+        const system = loadJson("system.json");
+        const prices = loadJson("prices.json");
 
-        // Yetki Kontrolü
+        const check = system["check"]?.emoji || "✅";
+        const negative = system["negative"]?.emoji || "❌";
+
         if (!msg.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
             return msg.reply(`${negative} Bu komut için yetkin yok.`);
         }
@@ -19,53 +19,42 @@ module.exports = {
         const amount = parseInt(args[1]);
         const targetKey = args[2]?.toLowerCase();
 
-        // Girdi Kontrolü
         if (!user || isNaN(amount) || !targetKey) {
-            return msg.reply(`${negative} Kullanım: \`!set @user <miktar> <birim>\``);
+            return msg.reply(`${negative} **Kullanım:** \`!set @user <miktar> <öge_adı>\``);
         }
 
-        // Merkezi Sistem Kontrolü
-        if (!isValidItem(targetKey)) {
-            return msg.reply(`${negative} **${targetKey}** adında geçerli bir birim/eşya bulunamadı.`);
+        const isCurrency = system[targetKey] && system[targetKey].currency === true;
+        const itemInfo = prices[targetKey];
+
+        if (!isCurrency && !itemInfo) {
+            return msg.reply(`${negative} **${targetKey}** adında geçerli bir birim, kit veya kasa bulunamadı.`);
         }
 
         const data = loadJson("data.json");
-        const item = getItemInfo(targetKey);
-        
         ensureUser(data, user.id);
         const p = data[user.id];
 
-        // Eşya Tipine Göre Ayarlama İşlemi
-        if (item.type === "currency") {
-            // Cüzdan birimi ayarlama
+        if (isCurrency) {
             p[targetKey] = amount < 0 ? 0 : amount;
-        } 
-        else if (item.type === "crate") {
-            // Kasa ayarlama
+        } else if (itemInfo.type === "crate") {
             if (!p.crates) p.crates = {};
-            if (amount <= 0) {
-                delete p.crates[targetKey];
-            } else {
-                p.crates[targetKey] = amount;
-            }
-        } 
-        else if (item.type === "kit") {
-            // Kit ayarlama
+            if (amount <= 0) delete p.crates[targetKey];
+            else p.crates[targetKey] = amount;
+        } else if (itemInfo.type === "kit") {
             if (!p.kits) p.kits = {};
-            if (amount <= 0) {
-                delete p.kits[targetKey];
-            } else {
-                p.kits[targetKey] = amount;
-            }
+            if (amount <= 0) delete p.kits[targetKey];
+            else p.kits[targetKey] = amount;
         }
 
         saveJson("data.json", data);
 
-        // Bilgilendirme Mesajı
-        if (amount <= 0 && item.type !== "currency") {
-            msg.reply(`${check} **${user.username}** kullanıcısının **${item.emoji} ${item.name}** eşyaları sıfırlandı.`);
+        const displayEmoji = isCurrency ? (system[targetKey]?.emoji || "🪙") : (itemInfo?.emoji || "📦");
+        const displayName = isCurrency ? (system[targetKey]?.name || targetKey.toUpperCase()) : (itemInfo?.name || targetKey.toUpperCase());
+
+        if (amount <= 0 && !isCurrency) {
+            msg.reply(`${check} **${user.username}** kullanıcısının **${displayEmoji} ${displayName}** ögeleri sıfırlandı.`);
         } else {
-            msg.reply(`${check} **${user.username}** kullanıcısının **${item.emoji} ${item.name}** miktarı **${amount}** olarak ayarlandı.`);
+            msg.reply(`${check} **${user.username}** kullanıcısının **${displayEmoji} ${displayName}** miktarı **${amount}** olarak ayarlandı.`);
         }
     }
 };

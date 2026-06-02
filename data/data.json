@@ -4,9 +4,16 @@
       "madenci": 1
     },
     "crates": {},
-    "pgmcoin": 100000020,
+    "pgmcoin": 99999990,
     "cevher": 99999993,
     "elmas": 0,
     "lastDaily": 1771695882291
+  },
+  "540610265084067851": {
+    "kits": {},
+    "crates": {},
+    "pgmcoin": 0,
+    "cevher": 0,
+    "elmas": 0
   }
 }

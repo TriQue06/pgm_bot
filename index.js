@@ -29,16 +29,18 @@ for (const folder of commandFolders) {
     for (const file of commandFiles) {
         const command = require(`./commands/${folder}/${file}`);
         
-        client.commands.set(command.name, command);
+        // Komut adını doğrudan küçük harfe çevirerek belleğe alıyoruz
+        client.commands.set(command.name.toLowerCase(), command);
         
         if (command.aliases && Array.isArray(command.aliases)) {
-            command.aliases.forEach(alias => client.commands.set(alias, command));
+            command.aliases.forEach(alias => client.commands.set(alias.toLowerCase(), command));
         }
     }
 }
 console.log('✅ Tüm komutlar başarıyla belleğe alındı.');
 
-client.once("clientReady", (c) => {
+// 🛠️ DÜZELTME: clientReady yerine v14 standardı olan ready kullanıldı
+client.once("ready", (c) => {
     console.log(`\n---------------------------------`);
     console.log(`🚀 PGM BOT Çevrim içi!`);
     console.log(`🤖 Bot: ${c.user.tag}`);
@@ -58,20 +60,23 @@ client.once("clientReady", (c) => {
 client.on("messageCreate", async (msg) => {
     if (msg.author.bot || !msg.guild) return;
 
+    // Prefix kontrolü
     if (!msg.content.startsWith("!")) return;
 
     const args = msg.content.slice(1).trim().split(/\s+/);
-    const commandName = "!" + args.shift()?.toLowerCase();
+    
+    // 🛠️ DÜZELTME: Başına tekrar "!" eklemek yerine saf komut adını alıyoruz (Örn: !add yazınca "add" kalır)
+    const commandName = args.shift()?.toLowerCase();
 
     const command = client.commands.get(commandName);
     if (!command) return;
 
-    console.log(`[KOMUT] ${msg.author.tag}: ${commandName} ${args.join(" ")}`);
+    console.log(`[KOMUT] ${msg.author.tag}: !${commandName} ${args.join(" ")}`);
 
     try {
         await command.execute(client, msg, args);
     } catch (error) {
-        console.error(`❌ Komut Hatası (${commandName}):`, error);
+        console.error(`❌ Komut Hatası (!${commandName}):`, error);
         msg.reply("Bu komutu çalıştırırken sistemsel bir hata oluştu. Lütfen geliştiriciye bildirin.");
     }
 });

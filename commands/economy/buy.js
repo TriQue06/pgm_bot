@@ -1,69 +1,63 @@
 const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
-const { getLang } = require("../../utils/formatter");
-const { getItemInfo, isValidItem } = require("../../utils/itemManager");
 
 module.exports = {
-    name: "!satınal",
-    aliases: ["!buy", "!satinal"],
+    name: "satınal",
+    aliases: ["satinal", "buy"],
+    description: "Marketten bakiye ile kit veya kasa satın almanızı sağlar.",
     execute(client, msg, args) {
-        const check = getLang("check").emoji;
-        const negative = getLang("negative").emoji;
-        const itemName = args[0]?.toLowerCase();
+        // system.json ve prices.json dosyalarını doğrudan yüklüyoruz
+        const system = loadJson("system.json");
+        const prices = loadJson("prices.json");
 
-        if (!itemName) return msg.reply(`${negative} **Hatalı Kullanım!**\nDoğrusu: \`!satinal <urun_adi>\``);
+        const check = system["check"]?.emoji || "✅";
+        const negative = system["negative"]?.emoji || "❌";
 
-        const market = loadJson("market.json");
-        const itemMarketData = market[itemName];
+        const targetItem = args[0]?.toLowerCase();
 
-        // 1. Market Dosyası Kontrolü
-        if (!itemMarketData) {
-            return msg.reply(`${negative} **${itemName}** adında bir ürün markette bulunamadı.`);
+        if (!targetItem) {
+            return msg.reply(`${negative} **Kullanım:** \`!satınal <öge_adı>\`\n*Örnek: !satınal madenci*\n*Örnek: !satınal altinkasa*`);
         }
 
-        // 2. Merkezi Sistem (items.json) Kontrolü
-        if (!isValidItem(itemName)) {
-            return msg.reply(`${negative} Sistemsel hata: **${itemName}** eşya listesinde tanımlı değil.`);
+        // Market dosyasından ögenin konfigürasyonunu kontrol et
+        const itemConfig = prices[targetItem];
+
+        if (!itemConfig) {
+            return msg.reply(`${negative} **Marketimizde böyle bir öge bulunmuyor!** Mağazadaki ögeleri görmek için \`!market\` yazabilirsin.`);
         }
 
         const data = loadJson("data.json");
         ensureUser(data, msg.author.id);
-
-        const { currency, price, type } = itemMarketData;
-        
-        // Eşya ve Para Birimi Bilgilerini Al (Emoji ve isim için)
-        const itemInfo = getItemInfo(itemName);
-        const currencyInfo = getItemInfo(currency);
-
-        if (!currencyInfo) {
-            return msg.reply(`${negative} Sistemsel hata: Geçersiz para birimi (**${currency}**).`);
-        }
-
         const p = data[msg.author.id];
 
-        // 3. Bakiye Kontrolü
-        if (p[currency] === undefined || p[currency] < price) {
-            return msg.reply(`${negative} **Yeterli bakiyen yok!** \nGereken: **${price} ${currencyInfo.emoji} ${currencyInfo.name}**`);
+        const cost = itemConfig.price;
+        const currencyType = itemConfig.currency; // örn: pgmcoin veya cevher
+
+        // Kullanıcının cüzdanında yeterli para birimi var mı?
+        const userBalance = p[currencyType] || 0;
+        if (userBalance < cost) {
+            const currencyEmoji = system[currencyType]?.emoji || "🪙";
+            const currencyName = system[currencyType]?.name || currencyType.toUpperCase();
+            return msg.reply(`${negative} Bu ögeyi satın almak için yeterli **${currencyName}** bakiyen bulunmuyor!\n**Gerekli:** ${cost} ${currencyEmoji} // **Sende Olan:** ${userBalance} ${currencyEmoji}`);
         }
 
-        // 4. Ödeme ve Teslimat
-        p[currency] -= price;
+        // Ödemeyi cüzdandan düş
+        p[currencyType] -= cost;
 
-        if (type === "kit") {
+        // Öge türüne göre envantere ekleme yap (kit veya crate)
+        if (itemConfig.type === "kit") {
             if (!p.kits) p.kits = {};
-            p.kits[itemName] = (p.kits[itemName] || 0) + 1;
-        } 
-        else if (type === "crate") {
+            p.kits[targetItem] = (p.kits[targetItem] || 0) + 1;
+        }
+        else if (itemConfig.type === "crate") {
             if (!p.crates) p.crates = {};
-            p.crates[itemName] = (p.crates[itemName] || 0) + 1;
-        } 
-        else {
-            // Güvenlik: Para iadesi
-            p[currency] += price;
-            return msg.reply(`${negative} **HATA:** Ürün türü (` + type + `) hatalı! Para iade edildi.`);
+            p.crates[targetItem] = (p.crates[targetItem] || 0) + 1;
         }
 
         saveJson("data.json", data);
 
-        msg.reply(`${check} Başarıyla **${price} ${currencyInfo.name}** karşılığında **${itemInfo.emoji} ${itemInfo.name}** satın alındı!`);
+        const itemEmoji = itemConfig.emoji || "📦";
+        const itemName = itemConfig.name || targetItem.toUpperCase();
+
+        msg.reply(`${check} Başarıyla **1 adet ${itemEmoji} ${itemName}** satın aldın! Ücret envanterinden tahsil edildi.`);
     }
 };

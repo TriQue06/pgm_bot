@@ -1,18 +1,19 @@
 const { EmbedBuilder } = require("discord.js");
 const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
-const { getLang } = require("../../utils/formatter");
-const { getItemInfo, getItemsByType } = require("../../utils/itemManager");
 
-const COOLDOWN = 6 * 60 * 60 * 1000;
+const COOLDOWN = 6 * 60 * 60 * 1000; // 6 saat
 
 module.exports = {
-    name: "!günlük",
-    aliases: ["!gunluk", "!daily"],
+    name: "günlük", // index.js prefix kontrolü için başındaki "!" işaretini kaldırdık
+    aliases: ["gunluk", "daily"],
     async execute(client, msg, args) {
         const data = loadJson("data.json");
-        const loot = loadJson("loot.json");
-        const check = getLang("check").emoji;
-        const negative = getLang("negative").emoji;
+        const system = loadJson("system.json");
+        const prices = loadJson("prices.json");
+        const dailyLoot = loadJson("daily_loot.json"); // Yeni dinamik günlük ödül dosyan
+
+        const check = system["check"]?.emoji || "✅";
+        const negative = system["negative"]?.emoji || "❌";
         const userId = msg.author.id;
 
         ensureUser(data, userId);
@@ -28,51 +29,47 @@ module.exports = {
             return msg.reply(`${negative} **Ödülünü zaten aldın!** Yeniden almana **${hours} saat ${minutes} dakika** var.`);
         }
 
-        const dailyLoot = loot["daily"];
-        if (!dailyLoot) return msg.reply(`${negative} Günlük ödül tablosu bulunamadı.`);
-        
+        // daily_loot.json kontrolü
+        if (!dailyLoot || !dailyLoot.rewards) {
+            return msg.reply(`${negative} Günlük ödül tablosu (\`daily_loot.json\`) bulunamadı veya içi boş.`);
+        }
+
         let rewards = [];
 
-        dailyLoot.forEach(reward => {
+        dailyLoot.rewards.forEach(reward => {
+            // Şans oranını kontrol et
             if ((Math.random() * 100) <= reward.chance) {
+                // Rastgele miktar hesaplama
                 const amount = Math.floor(Math.random() * (reward.max - reward.min + 1)) + reward.min;
-                
+
+                // 1. Durum: Doğrudan Para Birimi Ödülü
                 if (reward.type === "currency") {
-                    const info = getItemInfo(reward.name);
-                    
-                    // Güvenlik Kontrolü: info null ise hatayı yakala
-                    if (!info) {
-                        console.error(`⚠️ PGM HATA: items.json içinde '${reward.name}' birimi bulunamadı!`);
-                        return; 
-                    }
+                    const sysEmoji = system[reward.name]?.emoji || "🪙";
+                    const sysName = system[reward.name]?.name || reward.name.toUpperCase();
 
                     p[reward.name] = (p[reward.name] || 0) + amount;
-                    rewards.push(`## ${info.emoji} +${amount} ${info.name}`);
-                } 
+                    rewards.push(`### ${sysEmoji} +${amount} ${sysName}`);
+                }
+                // 2. Durum: Rastgele Kit Ödülü
                 else if (reward.type === "random_kit") {
-                    const allKits = Object.keys(getItemsByType("kit"));
+                    // prices.json içindeki type alanı "kit" olanları filtrele
+                    const allKits = Object.keys(prices).filter(k => prices[k].type === "kit");
                     if (allKits.length === 0) return;
 
                     const kitName = allKits[Math.floor(Math.random() * allKits.length)];
-                    const kitInfo = getItemInfo(kitName);
-                    
-                    if (!kitInfo) return;
+                    const kitInfo = prices[kitName];
 
                     if (!p.kits) p.kits = {};
                     p.kits[kitName] = (p.kits[kitName] || 0) + amount;
-                    rewards.push(`## ${kitInfo.emoji} +${amount} ${kitInfo.name} Kiti`);
+                    rewards.push(`### ${kitInfo?.emoji || "⚔️"} +${amount} ${kitInfo?.name || kitName.toUpperCase()} Kiti`);
                 }
+                // 3. Durum: Belirli Kasa Ödülü
                 else if (reward.type === "crate") {
-                    const info = getItemInfo(reward.name);
-                    
-                    if (!info) {
-                        console.error(`⚠️ PGM HATA: items.json içinde '${reward.name}' kasası bulunamadı!`);
-                        return;
-                    }
+                    const info = prices[reward.name];
 
                     if (!p.crates) p.crates = {};
                     p.crates[reward.name] = (p.crates[reward.name] || 0) + amount;
-                    rewards.push(`## ${info.emoji} +${amount} ${info.name}`);
+                    rewards.push(`### ${info?.emoji || "📦"} +${amount} ${info?.name || reward.name.toUpperCase()}`);
                 }
             }
         });

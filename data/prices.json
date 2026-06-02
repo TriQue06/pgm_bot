@@ -1,16 +1,21 @@
 {
+  "altinkalp": {
+    "price": 150,
+    "currency": "pgmcoin",
+    "type": "kit"
+  },
   "madenci": {
-    "price": 30,
+    "price": 80,
+    "currency": "pgmcoin",
+    "type": "kit"
+  },
+  "yagmaci": {
+    "price": 100,
     "currency": "pgmcoin",
     "type": "kit"
   },
   "nisanci": {
-    "price": 30,
-    "currency": "pgmcoin",
-    "type": "kit"
-  },
-  "demirci": {
-    "price": 30,
+    "price": 90,
     "currency": "pgmcoin",
     "type": "kit"
   },
