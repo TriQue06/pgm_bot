@@ -22,6 +22,7 @@
   },
   "ui": {
     "check": { "emoji": "<:check:1469662282278764638>" },
-    "negative": { "emoji": "<:negativecheck:1469662284224925727>" }
+    "negative": { "emoji": "<:negativecheck:1469662284224925727>" },
+    "smp": { "emoji": "<:smp0:1511776594296045739>" }
   }
 }

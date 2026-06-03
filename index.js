@@ -1,106 +1,75 @@
 process.on('unhandledRejection', (reason) => {
-    console.error('⚠️ [HATA] Yakalanamayan Reddetme:', reason);
+    console.error(reason);
 });
 
 process.on('uncaughtException', (err) => {
-    console.error('⚠️ [HATA] Beklenmedik İstisna:', err);
+    console.error(err);
 });
 
 require("dotenv").config();
 const fs = require("fs");
-const { Client, GatewayIntentBits, Collection, ActivityType, REST, Routes } = require("discord.js");
+const path = require("path");
+const { Client, GatewayIntentBits, Collection, ActivityType } = require("discord.js");
 
-// Mesaj içeriğini okuma (MessageContent) ve GuildMessages intentleri tamamen temizlendi,
-// çünkü artık sadece Slash Etkileşimlerini (Interactions) dinliyoruz.
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMembers
     ]
 });
 
 client.commands = new Collection();
-const slashCommandsArray = [];
 
-const commandFolders = fs.readdirSync("./commands");
+const commandsPath = path.join(__dirname, "commands");
 
-console.log('📂 Slash komutları yükleniyor...');
-for (const folder of commandFolders) {
-    const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith(".js"));
-    for (const file of commandFiles) {
-        const command = require(`./commands/${folder}/${file}`);
+if (fs.existsSync(commandsPath)) {
+    const commandFolders = fs.readdirSync(commandsPath);
 
-        // Komutun geçerli bir Slash Command yapısı (.data) olup olmadığını kontrol ediyoruz
-        if (command.data && typeof command.data.toJSON === "function") {
-            const commandName = command.data.name.toLowerCase();
-            client.commands.set(commandName, command);
-            slashCommandsArray.push(command.data.toJSON());
-        } else {
-            console.warn(`⚠️ [UYARI] ${file} dosyasında geçerli bir Slash Command verisi (.data) bulunamadı, atlandı.`);
+    for (const folder of commandFolders) {
+        const folderPath = path.join(commandsPath, folder);
+        if (!fs.lstatSync(folderPath).isDirectory()) continue;
+
+        const commandFiles = fs.readdirSync(folderPath).filter(file => file.endsWith(".js"));
+        for (const file of commandFiles) {
+            const command = require(path.join(folderPath, file));
+
+            if (command.name) {
+                client.commands.set(command.name.toLowerCase(), command);
+                if (command.aliases && Array.isArray(command.aliases)) {
+                    command.aliases.forEach(alias => client.commands.set(alias.toLowerCase(), command));
+                }
+            }
         }
     }
 }
-console.log('✅ Tüm geçerli komutlar belleğe alındı.');
 
-client.once("ready", async (c) => {
-    console.log(`\n---------------------------------`);
-    console.log(`🚀 PGM BOT Çevrim içi! (Tamamen Slash Sürümü)`);
-    console.log(`🤖 Bot: ${c.user.tag}`);
-    console.log(`📅 Tarih: ${new Date().toLocaleString('tr-TR')}`);
-    console.log(`---------------------------------\n`);
-
-    // ⚙️ OTO-DEPLOY: Komutları otomatik olarak Discord API'ye işleme
-    if (slashCommandsArray.length > 0) {
-        try {
-            console.log(`🔄 ${slashCommandsArray.length} adet komut Discord Uygulama Paneline kaydediliyor...`);
-            const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
-
-            // Küresel (Global) kayıt: Komutlar botun ekli olduğu tüm sunucularda aktif olur
-            await rest.put(
-                Routes.applicationCommands(c.user.id),
-                { body: slashCommandsArray }
-            );
-            console.log('✅ Tüm komutlar Discord API ye işlendi ve kullanıma hazır!');
-        } catch (error) {
-            console.error('❌ Komutlar kaydedilirken API hatası oluştu:', error);
-        }
-    }
-
+client.once("ready", (c) => {
+    console.log(`Bot: ${c.user.tag}`);
     client.user.setPresence({
         activities: [{
-            name: 'custom',
-            type: ActivityType.Custom,
-            state: '🛠️ Resmi Discord Uygulaması // PGM BOT'
+            name: '!yardım',
+            type: ActivityType.Playing
         }],
         status: 'online',
     });
 });
 
-// ====================================================================
-// 🎛️ TEK TETİKLEYİCİ: SLASH COMMAND INTERACTION HANDLER
-// ====================================================================
-client.on("interactionCreate", async (interaction) => {
-    // Sadece chat (eğik çizgi /) komutlarını dinle
-    if (!interaction.isChatInputCommand()) return;
+client.on("messageCreate", async (msg) => {
+    if (msg.author.bot || !msg.guild || !msg.content.startsWith("!")) return;
 
-    const command = client.commands.get(interaction.commandName.toLowerCase());
-    if (!command || !command.executeSlash) return;
+    const args = msg.content.slice(1).trim().split(/\s+/);
+    const commandName = args.shift()?.toLowerCase();
 
-    console.log(`[/] ${interaction.user.tag} komutu çalıştırdı: /${interaction.commandName}`);
+    const command = client.commands.get(commandName);
+    if (!command || !command.execute) return;
 
     try {
-        await command.executeSlash(interaction);
+        await command.execute(client, msg, args);
     } catch (error) {
-        console.error(`❌ Komut Hatası (/${interaction.commandName}):`, error);
-
-        const errorMessage = "Bu işlem gerçekleştirilirken sistemsel bir hata oluştu. Lütfen geliştiriciye bildirin.";
-
-        // Eğer komut içinde zaten bir yanıt verildiyse veya delege edildiyse (defer) followUp kullan, yoksa direkt reply at
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: errorMessage, ephemeral: true }).catch(() => {});
-        } else {
-            await interaction.reply({ content: errorMessage, ephemeral: true }).catch(() => {});
-        }
+        console.error(error);
+        msg.reply("Bir hata oluştu.");
     }
 });
 

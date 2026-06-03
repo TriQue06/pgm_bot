@@ -18,9 +18,16 @@ module.exports = {
         try {
             const configPath = require.resolve("../../utils/configLoader");
             delete require.cache[configPath];
+            const freshCfg = require("../../utils/configLoader");
+            freshCfg.reload();
 
             client.commands.clear();
-            const commandsPath = path.join(__dirname, "../../commands");
+
+            const commandsPath = path.resolve(__dirname, "../../commands");
+            if (!fs.existsSync(commandsPath)) {
+                throw new Error("'commands' klasörü bulunamadı.");
+            }
+
             const commandFolders = fs.readdirSync(commandsPath);
             let totalCommands = 0;
 
@@ -30,23 +37,35 @@ module.exports = {
 
                 const commandFiles = fs.readdirSync(folderPath).filter(file => file.endsWith(".js"));
                 for (const file of commandFiles) {
-                    const filePath = path.join(folderPath, file);
-                    delete require.cache[require.resolve(filePath)];
+                    const filePath = path.resolve(folderPath, file);
+
+                    try {
+                        const resolvedPath = require.resolve(filePath);
+                        delete require.cache[resolvedPath];
+                    } catch (e) {}
+
                     const command = require(filePath);
 
-                    client.commands.set(command.name.toLowerCase(), command);
-                    if (command.aliases) command.aliases.forEach(a => client.commands.set(a.toLowerCase(), command));
-                    totalCommands++;
+                    if (command.name) {
+                        client.commands.set(command.name.toLowerCase(), command);
+                        if (command.aliases && Array.isArray(command.aliases)) {
+                            command.aliases.forEach(a => client.commands.set(a.toLowerCase(), command));
+                        }
+                        totalCommands++;
+                    }
                 }
             }
 
             const embed = new EmbedBuilder()
-                .setColor(0x57F287)
-                .setDescription(`${check} **Sistem yapılandırması ve ${totalCommands} komut başarıyla yeniden yüklendi.**`);
+                .setColor(0x2B2D31)
+                .setTitle(`${check} Sistem Yenilendi`)
+                .setDescription(`## 🔄 Başarıyla Güncellendi!\n\n- \`system.json\` config önbelleği tamamen temizlendi ve RAM'e yeniden alındı.\n- Toplam **${totalCommands}** adet komut hafızadan temizlenip başarıyla yeniden yüklendi.`)
+                .setTimestamp();
 
             await sent.edit({ content: null, embeds: [embed] });
         } catch (error) {
-            await sent.edit(`${negative} **Yeniden yükleme sırasında bir hata oluştu:** ${error.message}`);
+            console.error(error);
+            await sent.edit(`${negative} **Yeniden yükleme sırasında bir hata oluştu:** \`${error.message}\``);
         }
     }
 };

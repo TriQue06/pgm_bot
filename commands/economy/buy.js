@@ -6,7 +6,6 @@ module.exports = {
     aliases: ["satinal", "buy"],
     description: "Marketten bakiye ile kit veya kasa satın almanızı sağlar.",
     execute(client, msg, args) {
-        // Emojiler kaldırıldı, sadece metin etiketleri kullanılıyor
         const check = "[BAŞARILI]";
         const negative = "[HATA]";
 
@@ -32,7 +31,6 @@ module.exports = {
         const currencyType = itemConfig.currency;
         const userBalance = p[currencyType] || 0;
 
-        // Bakiye kontrolü (Emojisiz metin)
         if (userBalance < cost) {
             const currencyName = cfg.getRaw("currencies", currencyType)?.name || currencyType.toUpperCase();
             return msg.reply(`${negative} Bu ögeyi satın almak için yeterli **${currencyName}** bakiyen bulunmuyor!\n**Gerekli:** ${cost} ${currencyName} // **Sende Olan:** ${userBalance} ${currencyName}`);

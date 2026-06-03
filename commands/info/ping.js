@@ -1,8 +1,7 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, version, ComponentType } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, version, ComponentType } = require("discord.js");
 const cfg = require("../../utils/configLoader");
 const os = require("os");
 
-// Gelişmiş RAM ilerleme çubuğu (Progress Bar)
 function createProgressBar(current, total, size = 10) {
     const percentage = current / total;
     const progress = Math.round(size * percentage);
@@ -15,51 +14,41 @@ function createProgressBar(current, total, size = 10) {
 }
 
 module.exports = {
-    // Resmi Discord Uygulaması (Slash Command) Yapısı
-    data: new SlashCommandBuilder()
-        .setName("ping")
-        .setDescription("Gelişmiş sistem monitörü ve bot istatistiklerini görüntüler."),
-
-    async executeSlash(interaction) {
+    name: "ping",
+    aliases: ["i", "info"],
+    async execute(client, msg, args) {
         const ui = cfg.getAll("ui") || {};
         const negative = ui.negative?.emoji || "";
 
-        // İlk yükleme mesajı gönderiliyor (Daha sonra embed ile güncellenecek)
-        const botMessage = await interaction.reply({ content: "🔄 **Sistem verileri toplanıyor, lütfen bekleyin...**", fetchReply: true });
+        const sent = await msg.reply("🔄 **Sistem verileri toplanıyor, lütfen bekleyin...**");
 
-        // Embed içeriğini dinamik olarak üreten fonksiyon
         const getSystemEmbed = () => {
-            // Slash komutları için en hassas gecikme hesaplama formülü
-            const latency = Date.now() - interaction.createdTimestamp;
-            const apiPing = interaction.client.ws.ping;
+            const latency = sent.createdTimestamp - msg.createdTimestamp;
+            const apiPing = client.ws.ping;
 
-            // Aktiflik Süresi (Uptime) Hesaplamaları
             const uptime = process.uptime();
             const days = Math.floor(uptime / 86400);
             const hours = Math.floor(uptime / 3600) % 24;
             const minutes = Math.floor((uptime / 60) % 60);
             const seconds = Math.floor(uptime % 60);
 
-            // RAM Kullanım Hesaplamaları
             const usedMemory = process.memoryUsage().rss / 1024 / 1024;
             const totalMemory = os.totalmem() / 1024 / 1024;
             const ramPercent = Math.round((usedMemory / totalMemory) * 100);
 
-            // CPU (İşlemci) Bilgileri
             const cpus = os.cpus();
             const cpuModel = cpus && cpus.length > 0 ? cpus[0].model.trim() : "Bilinmiyor";
             const coreCount = cpus ? cpus.length : 0;
             const cpuSpeed = cpus && cpus.length > 0 ? cpus[0].speed : 0;
 
-            // Bot İstatistikleri
-            const guildCount = interaction.client.guilds.cache.size;
-            const userCount = interaction.client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
-            const channelCount = interaction.client.channels.cache.size;
+            const guildCount = client.guilds.cache.size;
+            const userCount = client.guilds.cache.reduce((a, g) => a + g.memberCount, 0);
+            const channelCount = client.channels.cache.size;
 
             return new EmbedBuilder()
                 .setColor(latency < 150 ? 0x43B581 : (latency < 300 ? 0xF1C40F : 0xF04747))
-                .setAuthor({ name: `${interaction.client.user.username} Sistem Paneli`, iconURL: interaction.client.user.displayAvatarURL() })
-                .setThumbnail(interaction.client.user.displayAvatarURL({ dynamic: true }))
+                .setAuthor({ name: `${client.user.username} Sistem Paneli`, iconURL: client.user.displayAvatarURL() })
+                .setThumbnail(client.user.displayAvatarURL({ dynamic: true }))
                 .setDescription(`
 **Host:** \`${os.hostname()}\`
 **OS:** \`${os.type()} ${os.release()} (${os.arch()})\`
@@ -97,11 +86,10 @@ module.exports = {
                         inline: true
                     }
                 )
-                .setFooter({ text: `Talep eden: ${interaction.user.tag}`, iconURL: interaction.user.displayAvatarURL() })
+                .setFooter({ text: `Talep eden: ${msg.author.tag}`, iconURL: msg.author.displayAvatarURL() })
                 .setTimestamp();
         };
 
-        // Buton Arayüzü Tasarımı
         const row = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
@@ -116,35 +104,29 @@ module.exports = {
                     .setStyle(ButtonStyle.Danger)
             );
 
-        // İlk mesajı temizleyip Embed ve Butonları ekrana basıyoruz
-        await interaction.editReply({ content: null, embeds: [getSystemEmbed()], components: [row] });
+        await sent.edit({ content: null, embeds: [getSystemEmbed()], components: [row] });
 
-        // Butonları 1 dakika (60000ms) boyunca dinleyecek kolektör
-        const collector = botMessage.createMessageComponentCollector({ componentType: ComponentType.Button, time: 60000 });
+        const collector = sent.createMessageComponentCollector({ componentType: ComponentType.Button, time: 60000 });
 
         collector.on('collect', async (i) => {
-            // Güvenlik: Sadece komutu tetikleyen kullanıcı butonları yönetebilir
-            if (i.user.id !== interaction.user.id) {
+            if (i.user.id !== msg.author.id) {
                 return i.reply({ content: `${negative} Bu paneli sadece komutu yazan kişi kontrol edebilir.`, ephemeral: true });
             }
 
             if (i.customId === 'refresh_stats') {
-                // Verileri RAM hızıyla günceller ve arayüzü tazeler
                 await i.update({ embeds: [getSystemEmbed()], components: [row] });
             } else if (i.customId === 'delete_stats') {
-                // Kolektörü durdurur ve mesajı tamamen imha eder
                 collector.stop();
-                await interaction.deleteReply().catch(() => {});
+                await sent.delete().catch(() => {});
             }
         });
 
-        // Zaman aşımı bittiğinde butonları güvenli bir şekilde devre dışı bırakır
         collector.on('end', (collected, reason) => {
             if (reason === 'time') {
                 const disabledRow = new ActionRowBuilder().addComponents(
                     row.components.map(btn => ButtonBuilder.from(btn).setDisabled(true))
                 );
-                interaction.editReply({ components: [disabledRow] }).catch(() => {});
+                sent.edit({ components: [disabledRow] }).catch(() => {});
             }
         });
     }

@@ -1,26 +1,21 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ComponentType } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ComponentType } = require("discord.js");
 const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
 const cfg = require("../../utils/configLoader");
 const itemChecker = require("../../utils/itemChecker");
 
 module.exports = {
-    // Resmi Discord Uygulaması (Slash Command) Yapısı
-    data: new SlashCommandBuilder()
-        .setName("turnuva")
-        .setDescription("Turnuva kayıt işlemlerini ve interaktif katılımcı listesini yönetir."),
-
-    async executeSlash(interaction) {
+    name: "turnuva",
+    aliases: ["katıl", "katil", "join", "part", "katılımcılar", "kayıt"],
+    async execute(client, msg, args) {
         const statusData = loadJson("tournament_status.json", { tournamentActive: false });
         const ui = cfg.getAll("ui");
         const check = ui.check?.emoji || "";
         const negative = ui.negative?.emoji || "";
 
-        // Eğer turnuva kapalıysa, sadece komutu yazana gizli uyarı ver
         if (!statusData.tournamentActive) {
-            return interaction.reply({ content: `${negative} **Şu anda aktif bir turnuva kaydı bulunmuyor!**`, ephemeral: true });
+            return msg.reply(`${negative} **Şu anda aktif bir turnuva kaydı bulunmuyor!**`);
         }
 
-        // 1. AŞAMA: ANA BUTONLAR
         const actionBtn = new ButtonBuilder()
             .setCustomId("btn_register_action")
             .setLabel("Katıl / Yönet")
@@ -40,19 +35,13 @@ module.exports = {
             .setFooter({ text: "PGM Turnuva ve Etkinlik Sistemi" })
             .setTimestamp();
 
-        // Paneli kanala herkese açık olarak gönderiyoruz ki herkes tıklayabilsin
-        const botMessage = await interaction.reply({ embeds: [embed], components: [row], fetchReply: true });
-
-        // Panelin 5 dakika boyunca tıklanmaları dinlemesi sağlanıyor
+        const botMessage = await msg.reply({ embeds: [embed], components: [row] });
         const collector = botMessage.createMessageComponentCollector({ time: 300000 });
 
         collector.on("collect", async (inter) => {
             const pData = loadJson("participants.json", { players: {} });
             const players = pData.players || {};
 
-            // ==========================================
-            // A) KATILIMCILARI GÖRME
-            // ==========================================
             if (inter.customId === "btn_register_list") {
                 const listText = Object.entries(players).map(([name, data]) => {
                     const kitKey = typeof data === "string" ? data : data.kit;
@@ -68,18 +57,13 @@ module.exports = {
                     .setFooter({ text: `Toplam Oyuncu: ${Object.keys(players).length}` })
                     .setTimestamp();
 
-                // Sadece butona tıklayan kişiye listeyi göster
                 return inter.reply({ embeds: [listEmbed], ephemeral: true });
             }
 
-            // ==========================================
-            // B) KAYIT VE YÖNETİM MERKEZİ
-            // ==========================================
             if (inter.customId === "btn_register_action") {
                 let userMcName = null;
                 let userRecord = null;
 
-                // Tıklayan kullanıcının kayıtlı olup olmadığını denetle
                 for (const [name, data] of Object.entries(players)) {
                     if (typeof data === "object" && data.discordId === inter.user.id) {
                         userMcName = name;
@@ -88,9 +72,6 @@ module.exports = {
                     }
                 }
 
-                // --------------------------------------------------
-                // DURUM 1: OYUNCU ZATEN KAYITLI (YÖNETİM PANELİ)
-                // --------------------------------------------------
                 if (userRecord) {
                     const editNameBtn = new ButtonBuilder().setCustomId("btn_manage_name").setLabel("İsmi Düzenle").setStyle(ButtonStyle.Primary);
                     const editKitBtn = new ButtonBuilder().setCustomId("btn_manage_kit").setLabel("Kiti Düzenle").setStyle(ButtonStyle.Primary);
@@ -104,14 +85,13 @@ module.exports = {
                     const manageMsg = await inter.reply({
                         content: `Turnuvaya **${userMcName}** adıyla ve ${kitDisplay} kitiyle kayıtlısın.\nLütfen yapmak istediğin işlemi seç:`,
                         components: [manageRow],
-                        ephemeral: true, // Sadece ona özel açılır
+                        ephemeral: true,
                         fetchReply: true
                     });
 
                     try {
                         const manageInter = await manageMsg.awaitMessageComponent({ filter: i => i.user.id === inter.user.id, time: 120000 });
 
-                        // İŞLEM: TURNUVADAN ÇEKİLME
                         if (manageInter.customId === "btn_manage_leave") {
                             const freshData = loadJson("data.json");
                             ensureUser(freshData, inter.user.id);
@@ -124,14 +104,11 @@ module.exports = {
                             const freshPData = loadJson("participants.json", { players: {} });
                             delete freshPData.players[userMcName];
 
-                            // Asenkron kayıtlar
                             await saveJson("data.json", freshData);
                             await saveJson("participants.json", freshPData);
 
                             await manageInter.update({ content: `${check} Turnuvadan başarıyla ayrıldın. ${userRecord.kit !== "yok" ? "Kullandığın kit envanterine iade edildi." : ""}`, components: [] });
                         }
-
-                        // İŞLEM: MC ADINI DEĞİŞTİRME
                         else if (manageInter.customId === "btn_manage_name") {
                             const modal = new ModalBuilder().setCustomId("edit_mc_modal").setTitle("MC Adını Düzenle");
                             const mcInput = new TextInputBuilder()
@@ -158,14 +135,12 @@ module.exports = {
                             if (newName !== userMcName) {
                                 freshPData.players[newName] = freshPData.players[userMcName];
                                 delete freshPData.players[userMcName];
-                                await saveJson("participants.json", freshPData); // Asenkron kayıt
+                                await saveJson("participants.json", freshPData);
                             }
 
                             await modalSubmit.reply({ content: `${check} Minecraft adın başarıyla **${newName}** olarak güncellendi!`, ephemeral: true });
                             await manageInter.editReply({ components: [] });
                         }
-
-                        // İŞLEM: KİTİ DEĞİŞTİRME
                         else if (manageInter.customId === "btn_manage_kit") {
                             const data = loadJson("data.json");
                             ensureUser(data, inter.user.id);
@@ -222,22 +197,16 @@ module.exports = {
                             const finalPData = loadJson("participants.json", { players: {} });
                             finalPData.players[userMcName].kit = newKit;
 
-                            // Asenkron kayıtlar
                             await saveJson("data.json", finalData);
                             await saveJson("participants.json", finalPData);
 
                             const newKitRes = itemChecker.exists(newKit);
                             await kitSelectInter.update({ content: `${check} Kitin başarıyla ${newKitRes ? newKitRes.name : "_Kitsiz_"} olarak değiştirildi!`, components: [] });
                         }
-                    } catch (e) {
-                        // Zaman aşımı koruması
-                    }
+                    } catch (e) {}
                     return;
                 }
 
-                // --------------------------------------------------
-                // DURUM 2: OYUNCU KAYITLI DEĞİL (YENİ KAYIT EKRANI)
-                // --------------------------------------------------
                 const data = loadJson("data.json");
                 ensureUser(data, inter.user.id);
                 const p = data[inter.user.id];
@@ -306,14 +275,12 @@ module.exports = {
 
                     freshPData.players[mcName] = { discordId: inter.user.id, kit: selectedKit };
 
-                    // Asenkron kayıtlar
                     await saveJson("data.json", freshData);
                     await saveJson("participants.json", freshPData);
 
                     await modalSubmit.reply({ content: `${check} Turnuvaya başarıyla kayıt oldun!\n\n**Minecraft Adı:** \`${mcName}\`\n**Kullanılan Kit:** ${finalKitDisplay}`, ephemeral: true });
 
-                    // İşlemi yapan kişinin adı ile kanala duyuru mesajı atılır
-                    interaction.channel.send(`${check} **${inter.user.username}** turnuvaya \`${mcName}\` adıyla katıldı!`);
+                    msg.channel.send(`${check} **${inter.user.username}** turnuvaya \`${mcName}\` adıyla katıldı!`);
 
                 } catch (err) {}
             }

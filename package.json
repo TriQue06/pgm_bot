@@ -1,6 +1,6 @@
 {
   "name": "pgmbot",
-  "version": "0.38.2",
+  "version": "38.0.0",
   "description": "PGM ekonomi ve turnuva botu",
   "main": "index.js",
   "type": "commonjs",
@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "discord.js": "^14.25.1",
-    "dotenv": "^16.4.7"
+    "dotenv": "^16.4.7",
+    "minecraft-server-util": "^5.4.4"
   }
 }

@@ -1,34 +1,34 @@
 {
   "crates": {
     "bronzkasa": {
-      "price": 3,
-      "currency": "elmas"
+      "price": 180,
+      "currency": "pgmcoin"
     },
     "gumuskasa": {
-      "price": 6,
-      "currency": "elmas"
+      "price": 360,
+      "currency": "pgmcoin"
     },
     "altinkasa": {
-      "price": 9,
-      "currency": "elmas"
+      "price": 720,
+      "currency": "pgmcoin"
     }
   },
   "kits": {
     "altinkalp": {
-      "price": 150,
-      "currency": "pgmcoin"
+      "price": 10,
+      "currency": "elmas"
     },
     "madenci": {
-      "price": 80,
-      "currency": "pgmcoin"
+      "price": 10,
+      "currency": "elmas"
     },
     "yagmaci": {
-      "price": 100,
-      "currency": "pgmcoin"
+      "price": 10,
+      "currency": "elmas"
     },
     "nisanci": {
-      "price": 90,
-      "currency": "pgmcoin"
+      "price": 10,
+      "currency": "elmas"
     }
   }
 }

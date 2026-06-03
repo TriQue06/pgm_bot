@@ -2,7 +2,6 @@ const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
 const cfg = require("../../utils/configLoader");
 const itemChecker = require("../../utils/itemChecker");
 
-// 6 saatlik cooldown milisaniye cinsinden (6 * 60 * 60 * 1000)
 const COOLDOWN = 6 * 60 * 60 * 1000;
 
 module.exports = {
@@ -19,7 +18,6 @@ module.exports = {
         const p = data[userId];
         const now = Date.now();
 
-        // Cooldown Kontrolü
         if (p.lastDaily && (now - p.lastDaily) < COOLDOWN) {
             const remaining = COOLDOWN - (now - p.lastDaily);
             const hours = Math.floor(remaining / (1000 * 60 * 60));
@@ -81,7 +79,6 @@ module.exports = {
         p.lastDaily = now;
         saveJson("data.json", data);
 
-        // Geri bildirim mesajını düz metin (Markdown) formatında hazırlıyoruz
         if (rewards.length > 0) {
             const successMessage = `
 ${check} **${msg.author.username}**, günlük ödüllerini başarıyla topladın!

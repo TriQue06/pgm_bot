@@ -11,18 +11,15 @@ module.exports = {
         const check = ui.check?.emoji || "";
         const negative = ui.negative?.emoji || "";
 
-        // Yetki kontrolü (Yönetici yetkisi olmayanlar kullanamaz)
         if (!msg.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
             return msg.reply(`${negative} Bu komutu kullanmak için \`Sunucuyu Yönet\` yetkisine sahip olmalısın.`);
         }
 
-        // Mesajın hangi kelimeyle tetiklendiğini buluyoruz (!turnuvaaç mi !turnuvakapat mi)
         const triggerCommand = msg.content.slice(1).trim().split(/\s+/)[0].toLowerCase();
 
         const statusData = loadJson("tournament_status.json", { tournamentActive: false });
         const embed = new EmbedBuilder().setTimestamp();
 
-        // 1. DURUM: TURNUVAYI AÇMA
         if (["turnuvaaç", "turnuvaac"].includes(triggerCommand) || args[0]?.toLowerCase() === "aç" || args[0]?.toLowerCase() === "ac") {
             if (statusData.tournamentActive) {
                 return msg.reply(`${negative} **Turnuva kayıtları zaten şu anda aktif!**`);
@@ -31,7 +28,7 @@ module.exports = {
             statusData.tournamentActive = true;
             saveJson("tournament_status.json", statusData);
 
-            embed.setColor(0x2B2D31) // Koyu tema rengimiz
+            embed.setColor(0x2B2D31)
                 .setTitle(`${check} PGM BOT // Sistem Güncellemesi`)
                 .setDescription("## 🔓 Turnuva Kayıtları Açıldı!\n\nOyuncular artık `!turnuva` komutunu kullanarak kayıt yaptırabilir veya envanterlerindeki kitleri seçerek katılım sağlayabilirler.")
                 .setFooter({ text: "PGM Turnuva Yönetim Sistemi" });
@@ -39,7 +36,6 @@ module.exports = {
             return msg.channel.send({ embeds: [embed] });
         }
 
-        // 2. DURUM: TURNUVAYI KAPATMA
         else if (triggerCommand === "turnuvakapat" || args[0]?.toLowerCase() === "kapat") {
             if (!statusData.tournamentActive) {
                 return msg.reply(`${negative} **Turnuva kayıtları zaten şu anda kapalı!**`);

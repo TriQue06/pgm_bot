@@ -1,9 +1,8 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ComponentType } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ComponentType } = require("discord.js");
 const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
 const cfg = require("../../utils/configLoader");
 const itemChecker = require("../../utils/itemChecker");
 
-// Önbellek destekli fiyat listesi oluşturucu
 function generateMarketText(prices, categoryFilter, allCurrencies, invUi) {
     let text = "";
     const targetCategories = categoryFilter ? [categoryFilter] : ["crates", "kits"];
@@ -32,12 +31,9 @@ function generateMarketText(prices, categoryFilter, allCurrencies, invUi) {
 }
 
 module.exports = {
-    // Resmi Discord Uygulaması Yapısı (Slash Command Registration)
-    data: new SlashCommandBuilder()
-        .setName("market")
-        .setDescription("Marketteki ürünleri interaktif olarak listeler ve gizlice satın almanızı sağlar."),
-
-    async executeSlash(interaction) { // Handler'ınızın slash tetikleyicisine göre burayı execute veya executeSlash yapabilirsiniz
+    name: "market",
+    aliases: ["shop", "m", "satınal", "buy"],
+    async execute(client, msg, args) {
         const prices = loadJson("prices.json");
         const ui = cfg.getAll("ui");
         const invUi = cfg.getAll("inventory_ui");
@@ -57,11 +53,9 @@ module.exports = {
             .addOptions([
                 new StringSelectMenuOptionBuilder()
                     .setLabel(cratesTitle)
-                    .setDescription(`${cratesTitle} kategorisini listele`)
                     .setValue("crates"),
                 new StringSelectMenuOptionBuilder()
                     .setLabel(kitsTitle)
-                    .setDescription(`${kitsTitle} kategorisini listele`)
                     .setValue("kits")
             ]);
 
@@ -74,22 +68,21 @@ module.exports = {
             .setFooter({ text: "PGM BOT Mağaza Sistemi" })
             .setTimestamp();
 
-        // HARİKA KISIM: Mesajı doğrudan yazılan kanalda, sadece komutu kullanan kişiye özel (ephemeral) açıyoruz!
-        const botMessage = await interaction.reply({ embeds: [embed], components: [categoryRow], ephemeral: true, fetchReply: true });
+        const botMessage = await msg.reply({ embeds: [embed], components: [categoryRow] });
 
         const collector = botMessage.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 180000 });
 
-        collector.on("collect", async (inter) => {
-            // Güvenlik kontrolü (Zaten ephemeral olduğu için başkası göremez ama tetikleyiciyi sağlama alıyoruz)
-            if (inter.user.id !== interaction.user.id) return;
+        collector.on("collect", async (interaction) => {
+            if (interaction.user.id !== msg.author.id) {
+                return interaction.reply({ content: `${negative} Bu menüyü sadece komutu yazan kişi kullanabilir.`, ephemeral: true });
+            }
 
-            // 2. AŞAMA: KATEGORİ SEÇİMİ
-            if (inter.customId === "market_category_select") {
-                const selectedCategory = inter.values[0];
+            if (interaction.customId === "market_category_select") {
+                const selectedCategory = interaction.values[0];
                 const categoryItems = prices[selectedCategory];
 
                 if (!categoryItems || Object.keys(categoryItems).length === 0) {
-                    return inter.reply({ content: `${negative} Bu kategoride şu an satılık ürün bulunmuyor.`, ephemeral: true });
+                    return interaction.reply({ content: `${negative} Bu kategoride şu an satılık ürün bulunmuyor.`, ephemeral: true });
                 }
 
                 const filteredMarketText = generateMarketText(prices, selectedCategory, allCurrencies, invUi);
@@ -116,13 +109,11 @@ module.exports = {
                 const itemRow = new ActionRowBuilder().addComponents(itemMenu);
                 embed.setDescription(`Sistemdeki güncel fiyatlar aşağıdadır.\n\n${filteredMarketText}\n\nSatın almak istediğin ürünü aşağıdaki menüden seçebilirsin:`);
 
-                await inter.update({ embeds: [embed], components: [itemRow] });
+                await interaction.update({ embeds: [embed], components: [itemRow] });
             }
-
-            // 3. AŞAMA: MODAL GÖSTERİMİ
-            else if (inter.customId.startsWith("market_item_select_")) {
-                const selectedCategory = inter.customId.split("_")[3];
-                const selectedItemKey = inter.values[0];
+            else if (interaction.customId.startsWith("market_item_select_")) {
+                const selectedCategory = interaction.customId.split("_")[3];
+                const selectedItemKey = interaction.values[0];
                 const itemData = prices[selectedCategory][selectedItemKey];
 
                 const rawData = cfg.getRaw(selectedCategory, selectedItemKey);
@@ -142,12 +133,11 @@ module.exports = {
                 const modalRow = new ActionRowBuilder().addComponents(quantityInput);
                 modal.addComponents(modalRow);
 
-                await inter.showModal(modal);
+                await interaction.showModal(modal);
 
-                // 4. AŞAMA: MODAL SUBMIT (SATIN ALMA)
                 try {
-                    const modalSubmit = await inter.awaitModalSubmit({
-                        filter: (i) => i.customId === `buy_modal_${selectedCategory}_${selectedItemKey}` && i.user.id === interaction.user.id,
+                    const modalSubmit = await interaction.awaitModalSubmit({
+                        filter: (i) => i.customId === `buy_modal_${selectedCategory}_${selectedItemKey}` && i.user.id === msg.author.id,
                         time: 60000
                     });
 
@@ -160,8 +150,8 @@ module.exports = {
 
                     const totalPrice = itemData.price * quantity;
                     const data = loadJson("data.json");
-                    ensureUser(data, interaction.user.id);
-                    const p = data[interaction.user.id];
+                    ensureUser(data, msg.author.id);
+                    const p = data[msg.author.id];
 
                     if ((p[itemData.currency] || 0) < totalPrice) {
                         return modalSubmit.reply({ content: `${negative} Hesabında yeterli bakiye bulunmuyor! Gereken: **${totalPrice}**, Sende olan: **${p[itemData.currency] || 0}**`, ephemeral: true });
@@ -177,7 +167,7 @@ module.exports = {
                         p.kits[selectedItemKey] = (p.kits[selectedItemKey] || 0) + quantity;
                     }
 
-                    saveJson("data.json", data);
+                    await saveJson("data.json", data);
 
                     const resInfo = itemChecker.exists(selectedItemKey);
                     const currencyData = allCurrencies[itemData.currency] || {};
@@ -185,21 +175,17 @@ module.exports = {
                     const currencyName = currencyData.name || itemData.currency;
 
                     await modalSubmit.reply({
-                        content: `${check} **${interaction.user.username}**, başarıyla **${quantity}x** ${resInfo.name} satın aldın!\n*Ödenen Tutar:* ${currencyEmoji} **${totalPrice}** **${currencyName}**`,
-                        ephemeral: true
+                        content: `${check} **${msg.author.username}**, başarıyla **${quantity}x** ${resInfo.name} satın aldın!\n*Ödenen Tutar:* ${currencyEmoji} **${totalPrice}** **${currencyName}**`
                     });
 
-                    // İşlem bitince menüyü temizle
-                    await interaction.editReply({ components: [] });
+                    await botMessage.edit({ components: [] });
 
-                } catch (err) {
-                    // Zaman aşımı toleransı
-                }
+                } catch (err) {}
             }
         });
 
         collector.on("end", () => {
-            interaction.editReply({ components: [] }).catch(() => {});
+            botMessage.edit({ components: [] }).catch(() => {});
         });
     }
 };
