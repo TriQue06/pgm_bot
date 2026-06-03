@@ -15,20 +15,18 @@ module.exports = {
         const check = ui.check?.emoji || "";
         const negative = ui.negative?.emoji || "";
         const kasaEmoji = invUi.envanterkasa?.emoji || "";
-        const cantaEmoji = invUi.canta?.emoji || ""; // Random kit için kullanılacak
+        const cantaEmoji = invUi.canta?.emoji || "";
 
         const data = loadJson("data.json");
         ensureUser(data, msg.author.id);
         const p = data[msg.author.id];
 
-        // 1. Envanterde açılabilir kasa kontrolü
         if (!p.crates || Object.keys(p.crates).length === 0 || Object.values(p.crates).every(val => val <= 0)) {
             return msg.reply(`${negative} Envanterinde açılabilir bir kasa bulunmuyor.`);
         }
 
         const crateLoot = loadJson("crate_loot.json");
 
-        // 2. Kasa İhtimalleri Tablosunu (Loot Table) Dinamik Oluşturma
         let lootTableText = "";
         for (const [cKey, cLoot] of Object.entries(crateLoot)) {
             const crateInfo = systemCrates[cKey];
@@ -52,17 +50,15 @@ module.exports = {
                     itemName = systemCrates[item.name]?.name || item.name;
                 }
 
-                // Min ve Max aynıysa tek sayı göster, farklıysa aralık (Örn: 2-6)
                 const amountText = item.min === item.max ? `${item.min}` : `${item.min}-${item.max}`;
-                lootTableText += `- ${itemEmoji} **${itemName}** (\`${amountText}x\`) ➔ **%${item.chance}**\n`;
+                lootTableText += `- ${itemEmoji} **${itemName}** (\`${amountText}\`) ➔ **%${item.chance}**\n`;
             });
             lootTableText += "\n";
         }
 
-        // 3. Kasa seçim menüsünü oluşturma
         const menu = new StringSelectMenuBuilder()
             .setCustomId("crate_select")
-            .setPlaceholder("Hemen açmak istediğin kasayı seç...");
+            .setPlaceholder("Tümünü açmak istediğin kasayı seç...");
 
         let added = 0;
         for (const [key, amount] of Object.entries(p.crates)) {
@@ -71,7 +67,7 @@ module.exports = {
                 if (res && res.type === "crate") {
                     menu.addOptions(new StringSelectMenuOptionBuilder()
                         .setLabel(res.name.replace(/\*\*/g, "").replace(/<:[a-zA-Z0-9_]+:[0-9]+>\s*/g, ""))
-                        .setDescription(`Envanterinde ${amount} adet var. (Seçildiğinde anında açılır)`)
+                        .setDescription(`Envanterindeki ${amount} adet kasanın TAMAMI anında açılır.`)
                         .setValue(key));
                     added++;
                 }
@@ -87,13 +83,12 @@ module.exports = {
         const initialEmbed = new EmbedBuilder()
             .setColor(0x2B2D31)
             .setTitle(`${kasaEmoji} Kasa Sistemi ve Oranlar`)
-            .setDescription(`Aşağıdaki menüden seçtiğin kasa **anında açılacaktır**.\n\n${lootTableText.trim()}`)
+            .setDescription(`Aşağıdaki menüden seçtiğin kasanın **envanterindeki tamamı tek seferde açılacaktır**.\n\n${lootTableText.trim()}`)
             .setFooter({ text: "PGM Loot Sistemi" })
             .setTimestamp();
 
         const botMessage = await msg.reply({ embeds: [initialEmbed], components: [row] });
 
-        // Menü Collector'ı (60 saniye dinler)
         const collector = botMessage.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 60000 });
 
         collector.on("collect", async (inter) => {
@@ -104,7 +99,6 @@ module.exports = {
             const selectedKey = inter.values[0];
             const resInfo = itemChecker.exists(selectedKey);
 
-            // Çakışmayı önlemek için kasa açılma anında veriyi tekrar yükle
             const freshData = loadJson("data.json");
             ensureUser(freshData, msg.author.id);
             const freshP = freshData[msg.author.id];
@@ -120,64 +114,74 @@ module.exports = {
                 return inter.update({ content: `${negative} Bu kasanın ödül tablosu sistemde tanımlı değil!`, embeds: [], components: [] });
             }
 
-            // Envanterden kasanın eksiltilmesi
-            freshP.crates[selectedKey] -= 1;
-            if (freshP.crates[selectedKey] <= 0) delete freshP.crates[selectedKey];
+            const amountToOpen = freshP.crates[selectedKey];
+            delete freshP.crates[selectedKey];
 
-            let rewards = [];
+            let aggregatedRewards = {};
 
-            // crate_loot.json üzerinden şans (RNG) algoritması
-            possibleLoot.forEach(lootItem => {
-                const roll = Math.random() * 100;
+            for (let i = 0; i < amountToOpen; i++) {
+                possibleLoot.forEach(lootItem => {
+                    const roll = Math.random() * 100;
 
-                if (roll <= lootItem.chance) {
-                    const amount = Math.floor(Math.random() * (lootItem.max - lootItem.min + 1)) + lootItem.min;
+                    if (roll <= lootItem.chance) {
+                        const amount = Math.floor(Math.random() * (lootItem.max - lootItem.min + 1)) + lootItem.min;
 
-                    if (lootItem.type === "currency") {
-                        const res = itemChecker.exists(lootItem.name);
-                        if (res && res.type === "currency") {
-                            freshP[res.key] = (freshP[res.key] || 0) + amount;
-                            const curEmoji = currencies[res.key]?.emoji || "";
-                            rewards.push(`- ${curEmoji} **${amount}x** ${res.name}`);
+                        if (lootItem.type === "currency") {
+                            const res = itemChecker.exists(lootItem.name);
+                            if (res && res.type === "currency") {
+                                freshP[res.key] = (freshP[res.key] || 0) + amount;
+                                const curEmoji = currencies[res.key]?.emoji || "";
+
+                                if (!aggregatedRewards[res.key]) aggregatedRewards[res.key] = { name: res.name, emoji: curEmoji, amount: 0 };
+                                aggregatedRewards[res.key].amount += amount;
+                            }
+                        }
+                        else if (lootItem.type === "random_kit") {
+                            const allKits = Object.keys(cfg.getAll("kits"));
+                            const kitName = allKits[Math.floor(Math.random() * allKits.length)];
+                            const res = itemChecker.exists(kitName);
+
+                            if (res && res.type === "kit") {
+                                if (!freshP.kits) freshP.kits = {};
+                                freshP.kits[res.key] = (freshP.kits[res.key] || 0) + amount;
+
+                                if (!aggregatedRewards[res.key]) aggregatedRewards[res.key] = { name: res.name, emoji: cantaEmoji, amount: 0 };
+                                aggregatedRewards[res.key].amount += amount;
+                            }
+                        }
+                        else if (lootItem.type === "crate") {
+                            const res = itemChecker.exists(lootItem.name);
+                            if (res && res.type === "crate") {
+                                if (!freshP.crates) freshP.crates = {};
+                                freshP.crates[res.key] = (freshP.crates[res.key] || 0) + amount;
+                                const crEmoji = systemCrates[res.key]?.emoji || "";
+
+                                if (!aggregatedRewards[res.key]) aggregatedRewards[res.key] = { name: res.name, emoji: crEmoji, amount: 0 };
+                                aggregatedRewards[res.key].amount += amount;
+                            }
                         }
                     }
-                    else if (lootItem.type === "random_kit") {
-                        const allKits = Object.keys(cfg.getAll("kits"));
-                        const kitName = allKits[Math.floor(Math.random() * allKits.length)];
-                        const res = itemChecker.exists(kitName);
-
-                        if (res && res.type === "kit") {
-                            if (!freshP.kits) freshP.kits = {};
-                            freshP.kits[res.key] = (freshP.kits[res.key] || 0) + amount;
-                            rewards.push(`- ${cantaEmoji} **${amount}x** ${res.name}`);
-                        }
-                    }
-                    else if (lootItem.type === "crate") {
-                        const res = itemChecker.exists(lootItem.name);
-                        if (res && res.type === "crate") {
-                            if (!freshP.crates) freshP.crates = {};
-                            freshP.crates[res.key] = (freshP.crates[res.key] || 0) + amount;
-                            const crEmoji = systemCrates[res.key]?.emoji || "";
-                            rewards.push(`- ${crEmoji} **${amount}x** ${res.name}`);
-                        }
-                    }
-                }
-            });
+                });
+            }
 
             saveJson("data.json", freshData);
 
+            let finalRewardsDisplay = [];
+            for (const [key, data] of Object.entries(aggregatedRewards)) {
+                finalRewardsDisplay.push(`- ${data.emoji} ${data.amount}x ${data.name}`);
+            }
+
             const resultEmbed = new EmbedBuilder()
                 .setColor(0x2B2D31)
-                .setTitle(`${check} Kasa Açıldı!`)
-                .setDescription(`**${resInfo.name}** kasasını açtın!\n\n### Çıkan Ödüller:\n${rewards.length > 0 ? rewards.join("\n") : "_Maalesef hiçbir şey çıkmadı..._"}`)
-                .setFooter({ text: "PGM Loot Sistemi", iconURL: msg.author.displayAvatarURL() })
+                .setTitle(`${check} Kasa Açılışı Tamamlandı!`)
+                .setDescription(`Tam ${amountToOpen} adet ${resInfo.name} kasasını tek seferde açtın!\n\n### Toplam Çıkan Ödüller:\n${finalRewardsDisplay.length > 0 ? finalRewardsDisplay.join("\n") : "_Şansına hiçbir şey çıkmadı..._"}`)
+                .setFooter({ text: "PGM Toplu Loot Sistemi", iconURL: msg.author.displayAvatarURL() })
                 .setTimestamp();
 
             await inter.update({ content: null, embeds: [resultEmbed], components: [] });
-            collector.stop(); // İşlem bitince ana menüyü öldür
+            collector.stop();
         });
 
-        // Zaman aşımı toleransı
         collector.on("end", (collected, reason) => {
             if (reason === "time") {
                 botMessage.edit({ components: [] }).catch(() => {});
