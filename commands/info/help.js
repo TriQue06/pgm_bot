@@ -1,41 +1,57 @@
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const cfg = require("../../utils/configLoader");
 
 module.exports = {
     name: "yardım",
     aliases: ["h", "help", "y", "yardim"],
-    description: "Botun temel komutlarını ve web sitesini gösterir.",
+    description: "Botun temel komutlarını ve birimlerini listeler.",
     execute(client, msg, args) {
-        const ui = cfg.getAll("inventory_ui");
-        const cuzdanEmoji = ui.cuzdan?.emoji || "";
-        const cantaEmoji = ui.canta?.emoji || "";
+        // system.json içerisindeki kategorilerden emojileri dinamik olarak çekiyoruz
+        const ui = cfg.getAll("ui");
+        const invUi = cfg.getAll("inventory_ui");
+        const currencies = cfg.getAll("currencies");
 
-        const embed = new EmbedBuilder()
-            .setColor(0x2B2D31)
-            .setAuthor({ name: `${client.user.username} // Yardım Menüsü`, iconURL: client.user.displayAvatarURL() })
-            .setDescription(`
-Botumuzun ekonomi, kasa ve espor turnuvası kayıt sistemine ait temel komutlar aşağıda özetlenmiştir. Tüm detaylar, rehberler ve güncel kurallar için web sitemizi ziyaret edebilirsiniz.
+        // UI Emojileri (Eksikse boş kalmasın diye fallback tanımlandı)
+        const check = ui.check?.emoji || "";
+        const cuzdanEmoji = invUi.cuzdan?.emoji || "";
+        const cantaEmoji = invUi.canta?.emoji || "";
+        const marketEmoji = invUi.market?.emoji || "";
+        const kasaUiEmoji = invUi.envanterkasa?.emoji || "";
 
-${cuzdanEmoji} **Ekonomi ve Envanter**
-\`!envanter\` • Hesabınızdaki tüm varlıkları listeler.
-\`!gönder @kullanıcı <eşya> <miktar>\` • Başka bir oyuncuya varlık transfer eder.
-\`!kasa <kasa_adı>\` • Envanterinizdeki bir kasayı şans ödülleri için açar.
+        // Birim Emojileri
+        const pgmcoinEmoji = currencies.pgmcoin?.emoji || "";
+        const elmasEmoji = currencies.elmas?.emoji || "";
 
-${cantaEmoji} **Turnuva Kayıt**
-\`!katıl <Minecraft_Adı> <kit_adı>\` • Envanterinizden kit harcayarak turnuvaya katılır.
-\`!katıl <Minecraft_Adı> yok\` • Hiçbir kit harcamadan kitsiz olarak turnuvaya katılır.
-\`!part\` • Turnuvaya kayıt olmuş aktif oyuncuları listeler.
-            `)
-            .setFooter({ text: "PGM BOT • Gelişmiş Turnuva Sistemi" })
-            .setTimestamp();
+        // Hazırladığın şablona göre düz metni oluşturuyoruz
+        const helpMessage = `
+# ${check} PGM BOT // Yardım
 
-        const row = new ActionRowBuilder().addComponents(
-            new ButtonBuilder()
-                .setLabel("Tüm Komutlar ve Detaylı Rehber")
-                .setStyle(ButtonStyle.Link)
-                .setURL("https://trique06.github.io/pgm_bot_website/")
-        );
+## Birimler
+- ${pgmcoinEmoji} **PGM Coin** \`pgmcoin\` → Sunucunun ana ekonomik birimi. Kit satın almak için kullanabilirsin.
+- ${elmasEmoji} **Elmas** \`elmas\` → Sezona özel birim, sezon marketinde kullanabilirsin.
 
-        msg.reply({ embeds: [embed], components: [row] });
+## Genel Komutlar
+- ${pgmcoinEmoji} \`!günlük\` → Günlük ödüllerinden birini al. (6 saatte yenilenir.)
+- ${cuzdanEmoji} \`!envanter\` → Envanterini aç.
+- ${marketEmoji} \`!market\` → Marketi görüntüle.
+- ${pgmcoinEmoji} \`!gönder <@kullanıcı> <eşya_kodu> <miktar>\` → Birine herhangi bir birim veya eşya gönder.
+*Örnek: **!gönder @BayPGM pgmcoin 8***
+
+## Kasa Komutları
+- ${kasaUiEmoji} \`!satınal <kasa>\` → Marketten yeni bir kasa al.
+- ${kasaUiEmoji} \`!kasa <kasa>\` → Envanterindeki kasayı aç.
+*Örnek: **!kasa altinkasa***
+
+## Turnuva Katılımı ve Kit Komutları
+- \`!satınal <kit>\` → Kit satın al.
+- \`!katıl <mc_adi> yok\` → Turnuvaya kitsiz katıl.
+- ${cantaEmoji} \`!katıl <mc_adi> <kit>\` → Turnuvaya seçtiğin kit ile katıl.
+*Örnek: **!katıl BayPGM madenci***
+*Not: Kit ile katılımda kit envanterinden düşer ve geri alınamaz.*
+
+Detailed Guide & Rules: https://trique06.github.io/pgm_bot_website/
+`.trim();
+
+        // Doğrudan düz mesaj olarak gönderiyoruz (Embed yok!)
+        msg.reply({ content: helpMessage });
     }
 };

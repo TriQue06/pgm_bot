@@ -7,8 +7,8 @@ module.exports = {
     aliases: ["gonder", "transfer", "send"],
     execute(client, msg, args) {
         const ui = cfg.getAll("ui");
-        const check = ui.check?.emoji || "[BAŞARILI]";
-        const negative = ui.negative?.emoji || "[HATA]";
+        const check = ui.check?.emoji || "";
+        const negative = ui.negative?.emoji || "";
 
         const recipient = msg.mentions.users.first();
         const targetKey = args[1]?.toLowerCase();

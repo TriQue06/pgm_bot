@@ -1,6 +1,7 @@
 const { PermissionFlagsBits } = require("discord.js");
 const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
 const itemChecker = require("../../utils/itemChecker");
+const cfg = require("../../utils/configLoader");
 
 module.exports = {
     name: "admin",
@@ -8,8 +9,11 @@ module.exports = {
     execute(client, msg, args) {
         if (!msg.member.permissions.has(PermissionFlagsBits.ManageGuild)) return;
 
-        const commandName = msg.content.split(" ")[0].slice(1).toLowerCase();
+        const ui = cfg.getAll("ui");
+        const check = ui.check?.emoji || "";
+        const negative = ui.negative?.emoji || "";
 
+        const commandName = msg.content.split(" ")[0].slice(1).toLowerCase();
         const isAdd = ["add", "ekle"].includes(commandName);
         const subCommand = isAdd ? "add" : "set";
 
@@ -18,11 +22,11 @@ module.exports = {
         const amount = parseInt(args[2]);
 
         if (!user || !targetKey || isNaN(amount)) {
-            return msg.reply(`Kullanım: !${commandName} @kullanıcı eşya miktar`);
+            return msg.reply(`${negative} **Kullanım:** \`!${commandName} @kullanıcı <eşya> <miktar>\``);
         }
 
         const item = itemChecker.exists(targetKey);
-        if (!item) return msg.reply("[HATA] Geçersiz eşya veya öge kodu.");
+        if (!item) return msg.reply(`${negative} Geçersiz eşya veya öge kodu.`);
 
         const data = loadJson("data.json");
         ensureUser(data, user.id);
@@ -43,6 +47,6 @@ module.exports = {
         }
 
         saveJson("data.json", data);
-        msg.reply(`[BAŞARILI] **${user.username}** kullanıcısının ${item.name} bilgisi güncellendi.`);
+        msg.reply(`${check} **${user.username}** kullanıcısının **${item.name}** bilgisi güncellendi.`);
     }
 };

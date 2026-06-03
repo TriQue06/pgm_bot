@@ -1,34 +1,38 @@
 {
-  "altinkalp": {
-    "price": 150,
-    "currency": "pgmcoin"
+  "crates": {
+    "bronzkasa": {
+      "price": 3,
+      "currency": "elmas"
+    },
+    "gumuskasa": {
+      "price": 6,
+      "currency": "elmas"
+    },
+    "altinkasa": {
+      "price": 9,
+      "currency": "elmas"
+    },
+    "ametistkasa": {
+      "price": 9,
+      "currency": "elmas"
+    }
   },
-  "madenci": {
-    "price": 80,
-    "currency": "pgmcoin"
-  },
-  "yagmaci": {
-    "price": 100,
-    "currency": "pgmcoin"
-  },
-  "nisanci": {
-    "price": 90,
-    "currency": "pgmcoin"
-  },
-  "bronzkasa": {
-    "price": 3,
-    "currency": "elmas"
-  },
-  "gumuskasa": {
-    "price": 6,
-    "currency": "elmas"
-  },
-  "altinkasa": {
-    "price": 9,
-    "currency": "elmas"
-  },
-  "ametistkasa": {
-    "price": 9,
-    "currency": "elmas"
+  "kits": {
+    "altinkalp": {
+      "price": 150,
+      "currency": "pgmcoin"
+    },
+    "madenci": {
+      "price": 80,
+      "currency": "pgmcoin"
+    },
+    "yagmaci": {
+      "price": 100,
+      "currency": "pgmcoin"
+    },
+    "nisanci": {
+      "price": 90,
+      "currency": "pgmcoin"
+    }
   }
 }

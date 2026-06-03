@@ -10,6 +10,7 @@ module.exports = {
         const crateType = args[0]?.toLowerCase();
 
         const ui = cfg.getAll("ui");
+        const check = ui.check?.emoji || "";
         const negative = ui.negative?.emoji || "";
 
         if (!crateType) {
@@ -50,7 +51,7 @@ module.exports = {
                     const res = itemChecker.exists(lootItem.name);
                     if (res && res.type === "currency") {
                         p[res.key] = (p[res.key] || 0) + amount;
-                        rewards.push(`### +${amount} ${res.name}`);
+                        rewards.push(`### +${amount} **${res.name}**`);
                     }
                 }
                 else if (lootItem.type === "random_kit") {
@@ -61,7 +62,7 @@ module.exports = {
                     if (res && res.type === "kit") {
                         if (!p.kits) p.kits = {};
                         p.kits[res.key] = (p.kits[res.key] || 0) + amount;
-                        rewards.push(`### +${amount} ${res.name}`);
+                        rewards.push(`### +${amount} **${res.name}**`);
                     }
                 }
                 else if (lootItem.type === "crate") {
@@ -69,7 +70,7 @@ module.exports = {
                     if (res && res.type === "crate") {
                         if (!p.crates) p.crates = {};
                         p.crates[res.key] = (p.crates[res.key] || 0) + amount;
-                        rewards.push(`### +${amount} ${res.name}`);
+                        rewards.push(`### +${amount} **${res.name}**`);
                     }
                 }
             }

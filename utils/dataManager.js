@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const cfg = require("./configLoader"); // Merkezi configLoader dahil edildi
 
 const DATA_PATH = path.join(__dirname, "../data");
 
@@ -30,7 +31,8 @@ function saveJson(filename, data) {
 }
 
 function ensureUser(data, userId) {
-    const system = loadJson("system.json");
+    // Doğrudan loadJson yerine merkezi loader'dan currencies kategorisini çekiyoruz
+    const currencies = cfg.getAll("currencies");
 
     if (!data[userId]) {
         data[userId] = {
@@ -39,7 +41,6 @@ function ensureUser(data, userId) {
         };
     }
 
-    const currencies = system.currencies || {};
     for (const key of Object.keys(currencies)) {
         if (data[userId][key] === undefined) {
             data[userId][key] = 0;

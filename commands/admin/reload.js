@@ -1,23 +1,24 @@
 const { PermissionFlagsBits, EmbedBuilder } = require("discord.js");
 const fs = require("fs");
 const path = require("path");
+const cfg = require("../../utils/configLoader");
 
 module.exports = {
     name: "reload",
     aliases: ["yenile", "rl"],
     async execute(client, msg, args) {
-        if (!msg.member.permissions.has(PermissionFlagsBits.ManageGuild)) {
-            return msg.reply("[HATA] Bu komut için yetkin yok.");
-        }
+        if (!msg.member.permissions.has(PermissionFlagsBits.ManageGuild)) return;
+
+        const ui = cfg.getAll("ui");
+        const check = ui.check?.emoji || "";
+        const negative = ui.negative?.emoji || "";
 
         const sent = await msg.reply("Sistem dosyaları ve komutlar temizleniyor...");
 
         try {
-            // 1. ConfigLoader cache'ini temizle (JSON dosyalarının tekrar okunmasını sağlar)
             const configPath = require.resolve("../../utils/configLoader");
             delete require.cache[configPath];
 
-            // 2. Komutları temizle
             client.commands.clear();
             const commandsPath = path.join(__dirname, "../../commands");
             const commandFolders = fs.readdirSync(commandsPath);
@@ -41,11 +42,11 @@ module.exports = {
 
             const embed = new EmbedBuilder()
                 .setColor(0x57F287)
-                .setDescription(`[BAŞARILI] Sistem yapılandırması ve ${totalCommands} komut yeniden yüklendi.`);
+                .setDescription(`${check} **Sistem yapılandırması ve ${totalCommands} komut başarıyla yeniden yüklendi.**`);
 
             await sent.edit({ content: null, embeds: [embed] });
         } catch (error) {
-            await sent.edit("[HATA] Yeniden yükleme sırasında bir hata oluştu: " + error.message);
+            await sent.edit(`${negative} **Yeniden yükleme sırasında bir hata oluştu:** ${error.message}`);
         }
     }
 };
