@@ -1,31 +1,14 @@
 {
-  "1088510460778782831": {
-    "kits": {
-      "altinkalp": 3,
-      "yagmaci": 2
-    },
-    "crates": {
-      "ametistkasa": 199959043,
-      "gumuskasa": 11,
-      "bronzkasa": 4,
-      "altinkasa": 8
-    },
-    "pgmcoin": 13130281832109103000,
-    "elmas": 1,
-    "lastDaily": 1780472995221,
-    "cevher": 4
-  },
   "540610265084067851": {
-    "kits": {
-      "yagmaci": 1
-    },
-    "crates": {
-      "altinkasa": 2,
-      "ametistkasa": 333,
-      "bronzkasa": 1,
-      "gumuskasa": 9
-    },
-    "pgmcoin": 0,
+    "kits": {},
+    "crates": {},
+    "pgmcoin": 100000000010,
+    "elmas": 0
+  },
+  "1088510460778782831": {
+    "kits": {},
+    "crates": {},
+    "pgmcoin": 9999999910,
     "elmas": 0
   }
 }

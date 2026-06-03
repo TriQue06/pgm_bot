@@ -1,5 +1,12 @@
 {
   "players": {
-    "BayPGM": "madenci"
+    "BayPGM": {
+      "discordId": "540610265084067851",
+      "kit": "yok"
+    },
+    "eren_za": {
+      "discordId": "1088510460778782831",
+      "kit": "nisanci"
+    }
   }
 }
