@@ -1,16 +1,18 @@
+const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
 const cfg = require("../../utils/configLoader");
 
 module.exports = {
-    name: "yardım",
-    aliases: ["h", "help", "y", "yardim"],
-    description: "Botun temel komutlarını ve birimlerini listeler.",
-    execute(client, msg, args) {
-        // system.json içerisindeki kategorilerden emojileri dinamik olarak çekiyoruz
+    // Resmi Discord Slash Command kaydı
+    data: new SlashCommandBuilder()
+        .setName("yardım")
+        .setDescription("Botun temel komutlarını ve birimlerini listeler."),
+
+    async executeSlash(interaction) {
         const ui = cfg.getAll("ui");
         const invUi = cfg.getAll("inventory_ui");
         const currencies = cfg.getAll("currencies");
 
-        // UI Emojileri (Eksikse boş kalmasın diye fallback tanımlandı)
+        // UI Emojileri
         const check = ui.check?.emoji || "";
         const cuzdanEmoji = invUi.cuzdan?.emoji || "";
         const cantaEmoji = invUi.canta?.emoji || "";
@@ -21,7 +23,7 @@ module.exports = {
         const pgmcoinEmoji = currencies.pgmcoin?.emoji || "";
         const elmasEmoji = currencies.elmas?.emoji || "";
 
-        // Hazırladığın şablona göre düz metni oluşturuyoruz
+        // Yardım içeriği
         const helpMessage = `
 # ${check} PGM BOT // Yardım
 
@@ -30,28 +32,22 @@ module.exports = {
 - ${elmasEmoji} **Elmas** \`elmas\` → Sezona özel birim, sezon marketinde kullanabilirsin.
 
 ## Genel Komutlar
-- ${pgmcoinEmoji} \`!günlük\` → Günlük ödüllerinden birini al. (6 saatte yenilenir.)
-- ${cuzdanEmoji} \`!envanter\` → Envanterini aç.
-- ${marketEmoji} \`!market\` → Marketi görüntüle.
-- ${pgmcoinEmoji} \`!gönder <@kullanıcı> <eşya_kodu> <miktar>\` → Birine herhangi bir birim veya eşya gönder.
-*Örnek: **!gönder @BayPGM pgmcoin 8***
+- ${pgmcoinEmoji} \`/günlük\` → Günlük ödülünü al. (6 saatte bir.)
+- ${cuzdanEmoji} \`/envanter\` → Envanterini görüntüle.
+- ${marketEmoji} \`/market\` → Market menüsünü aç.
+- ${pgmcoinEmoji} \`/gönder\` → Başka bir oyuncuya birim veya eşya gönder.
 
 ## Kasa Komutları
-- ${kasaUiEmoji} \`!satınal <kasa>\` → Marketten yeni bir kasa al.
-- ${kasaUiEmoji} \`!kasa <kasa>\` → Envanterindeki kasayı aç.
-*Örnek: **!kasa altinkasa***
+- ${kasaUiEmoji} \`/kasa\` → Envanterindeki kasaları listele ve aç.
 
-## Turnuva Katılımı ve Kit Komutları
-- \`!satınal <kit>\` → Kit satın al.
-- \`!katıl <mc_adi> yok\` → Turnuvaya kitsiz katıl.
-- ${cantaEmoji} \`!katıl <mc_adi> <kit>\` → Turnuvaya seçtiğin kit ile katıl.
-*Örnek: **!katıl BayPGM madenci***
-*Not: Kit ile katılımda kit envanterinden düşer ve geri alınamaz.*
+## Turnuva Sistemi
+- ${cantaEmoji} \`/turnuva\` → Turnuva kayıtlarını yönet, katıl veya katılımcı listesini görüntüle.
 
-Detailed Guide & Rules: https://trique06.github.io/pgm_bot_website/
+---
+**Daha fazla detay ve kurallar için:** [PGM BOT Rehberi](https://trique06.github.io/pgm_bot_website/)
 `.trim();
 
-        // Doğrudan düz mesaj olarak gönderiyoruz (Embed yok!)
-        msg.reply({ content: helpMessage });
+        // Yanıtı sadece komutu yazan kişiye özel (ephemeral) olarak döndür
+        await interaction.reply({ content: helpMessage, ephemeral: true });
     }
 };

@@ -1,6 +1,7 @@
 const fs = require("fs");
+const fsPromises = require("fs").promises; // Asenkron yazma işlemleri için promises eklendi
 const path = require("path");
-const cfg = require("./configLoader"); // Merkezi configLoader dahil edildi
+const cfg = require("./configLoader");
 
 const DATA_PATH = path.join(__dirname, "../data");
 
@@ -12,27 +13,39 @@ function getFilePath(filename) {
     return path.join(DATA_PATH, filename);
 }
 
+// Okuma işlemi hızlı olması açısından senkron kalabilir ancak hata yönetimi zırh gibi sağlamlaştırıldı
 function loadJson(filename, fallback = {}) {
     const filePath = getFilePath(filename);
     if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2));
+        try {
+            fs.writeFileSync(filePath, JSON.stringify(fallback, null, 2));
+        } catch (err) {
+            console.error(`❌ [YAZMA HATASI] ${filename} oluşturulamadı:`, err);
+        }
         return fallback;
     }
     try {
-        return JSON.parse(fs.readFileSync(filePath, "utf8"));
-    } catch {
+        const content = fs.readFileSync(filePath, "utf8");
+        return content.trim() ? JSON.parse(content) : fallback;
+    } catch (err) {
+        console.error(`❌ [JSON HATASI] ${filename} okunurken hata oluştu, fallback dönüyor:`, err);
         return fallback;
     }
 }
 
-function saveJson(filename, data) {
+// KRİTİK DEĞİŞİKLİK: Veritabanı yazma işlemi asenkron yapıldı.
+// Bot diske yazarken diğer slash komutlarını işlemeye devam edebilir, kilitlenme (I/O Block) yaşanmaz.
+async function saveJson(filename, data) {
     const filePath = getFilePath(filename);
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+    try {
+        await fsPromises.writeFile(filePath, JSON.stringify(data, null, 2), "utf8");
+    } catch (err) {
+        console.error(`❌ [ASENKRON YAZMA HATASI] ${filename} kaydedilemedi:`, err);
+    }
 }
 
 function ensureUser(data, userId) {
-    // Doğrudan loadJson yerine merkezi loader'dan currencies kategorisini çekiyoruz
-    const currencies = cfg.getAll("currencies");
+    const currencies = cfg.getAll("currencies") || {};
 
     if (!data[userId]) {
         data[userId] = {
@@ -41,6 +54,7 @@ function ensureUser(data, userId) {
         };
     }
 
+    // Para birimlerini güvenli bir şekilde döngüye sokuyoruz
     for (const key of Object.keys(currencies)) {
         if (data[userId][key] === undefined) {
             data[userId][key] = 0;

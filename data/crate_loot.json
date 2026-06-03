@@ -15,11 +15,5 @@
     { "type": "currency", "name": "elmas", "min": 2, "max": 5, "chance": 75 },
     { "type": "random_kit", "min": 1, "max": 1, "chance": 25 },
     { "type": "crate", "name": "gumuskasa", "min": 1, "max": 1, "chance": 20 }
-  ],
-  "ametistkasa": [
-    { "type": "currency", "name": "pgmcoin", "min": 5, "max": 12, "chance": 100 },
-    { "type": "currency", "name": "elmas", "min": 2, "max": 5, "chance": 75 },
-    { "type": "random_kit", "min": 1, "max": 1, "chance": 25 },
-    { "type": "crate", "name": "altinkasa", "min": 1, "max": 1, "chance": 20 }
   ]
 }

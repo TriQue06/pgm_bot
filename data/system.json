@@ -12,8 +12,7 @@
   "crates": {
     "bronzkasa": { "name": "Bronz Kasa", "emoji": "<:bronzkasa:1469400728442245347>" },
     "gumuskasa": { "name": "Gümüş Kasa", "emoji": "<:gumuskasa:1469400730589724828>" },
-    "altinkasa": { "name": "Altın Kasa", "emoji": "<:altinkasa:1469400726043361443>" },
-    "ametistkasa": { "name": "Ametist Kasa", "emoji": "<:ametistkasa:1511470372581675129>" }
+    "altinkasa": { "name": "Altın Kasa", "emoji": "<:altinkasa:1469400726043361443>" }
   },
   "kits": {
     "altinkalp": { "name": "Altın Kalp Kiti", "emoji": "<:kit:1469016921478266880>" },

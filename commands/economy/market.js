@@ -1,28 +1,29 @@
-const { EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ComponentType } = require("discord.js");
+const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ComponentType } = require("discord.js");
 const { loadJson, saveJson, ensureUser } = require("../../utils/dataManager");
 const cfg = require("../../utils/configLoader");
 const itemChecker = require("../../utils/itemChecker");
 
-// Piyasayı (fiyatları) string formatında hazırlayan yardımcı fonksiyon
-function generateMarketText(prices, categoryFilter = null) {
+// Önbellek destekli fiyat listesi oluşturucu
+function generateMarketText(prices, categoryFilter, allCurrencies, invUi) {
     let text = "";
     const targetCategories = categoryFilter ? [categoryFilter] : ["crates", "kits"];
 
     for (const cat of targetCategories) {
         if (!prices[cat] || Object.keys(prices[cat]).length === 0) continue;
 
-        const title = cat === "crates" ? "## 📦 Kasalar" : "## 🎒 Turnuva Kitleri";
-        text += `${title}\n`;
+        const catEmoji = cat === "crates" ? (invUi.envanterkasa?.emoji || "") : (invUi.canta?.emoji || "");
+        const catName = cat === "crates" ? (invUi.envanterkasa?.name || "Kasalar") : (invUi.canta?.name || "Kitler");
+
+        text += `## ${catEmoji} ${catName}\n`;
 
         for (const [key, itemData] of Object.entries(prices[cat])) {
             const res = itemChecker.exists(key);
             if (!res) continue;
 
-            const currencyData = cfg.getRaw("currencies", itemData.currency);
-            const currencyEmoji = currencyData?.emoji || "";
-            const currencyName = currencyData?.name || itemData.currency;
+            const currencyData = allCurrencies[itemData.currency] || {};
+            const currencyEmoji = currencyData.emoji || "";
+            const currencyName = currencyData.name || itemData.currency;
 
-            // İstediğin o kusursuz format: - **<:emoji:> Eşya** `kod` → <:emoji:> **Bedel** **Birim**
             text += `- ${res.name} \`${key}\` → ${currencyEmoji} **${itemData.price}** **${currencyName}**\n`;
         }
         text += "\n";
@@ -31,30 +32,36 @@ function generateMarketText(prices, categoryFilter = null) {
 }
 
 module.exports = {
-    name: "market",
-    aliases: ["shop", "m", "satınal", "buy"],
-    description: "Marketteki ürünleri interaktif olarak listeler ve satın alma imkanı sunar.",
-    async execute(client, msg, args) {
+    // Resmi Discord Uygulaması Yapısı (Slash Command Registration)
+    data: new SlashCommandBuilder()
+        .setName("market")
+        .setDescription("Marketteki ürünleri interaktif olarak listeler ve gizlice satın almanızı sağlar."),
+
+    async executeSlash(interaction) { // Handler'ınızın slash tetikleyicisine göre burayı execute veya executeSlash yapabilirsiniz
         const prices = loadJson("prices.json");
         const ui = cfg.getAll("ui");
+        const invUi = cfg.getAll("inventory_ui");
+        const allCurrencies = cfg.getAll("currencies") || {};
 
         const check = ui.check?.emoji || "";
         const negative = ui.negative?.emoji || "";
 
-        // 1. AŞAMA: İLK EKRAN - TÜM LİSTEYİ HAZIRLAMA
-        const fullMarketText = generateMarketText(prices);
+        const cratesTitle = invUi.envanterkasa?.name || "Kasalar";
+        const kitsTitle = invUi.canta?.name || "Kitler";
+
+        const fullMarketText = generateMarketText(prices, null, allCurrencies, invUi);
 
         const categoryMenu = new StringSelectMenuBuilder()
             .setCustomId("market_category_select")
             .setPlaceholder("Alışveriş yapmak istediğin kategoriyi seç...")
             .addOptions([
                 new StringSelectMenuOptionBuilder()
-                    .setLabel("Kasalar")
-                    .setDescription("Sadece envanter kasalarını listele")
+                    .setLabel(cratesTitle)
+                    .setDescription(`${cratesTitle} kategorisini listele`)
                     .setValue("crates"),
                 new StringSelectMenuOptionBuilder()
-                    .setLabel("Turnuva Kitleri")
-                    .setDescription("Sadece turnuva kitlerini listele")
+                    .setLabel(kitsTitle)
+                    .setDescription(`${kitsTitle} kategorisini listele`)
                     .setValue("kits")
             ]);
 
@@ -63,30 +70,29 @@ module.exports = {
         const embed = new EmbedBuilder()
             .setColor(0x2B2D31)
             .setTitle(`${check} PGM BOT // Market`)
-            .setDescription(`Sistemdeki güncel fiyatlar aşağıdadır.\n\n${fullMarketText}\n\n👇 İncelemek ve satın almak istediğin kategoriyi seç:`)
+            .setDescription(`Sistemdeki güncel fiyatlar aşağıdadır.\n\n${fullMarketText}\n\nİncelemek ve satın almak istediğin kategoriyi seç:`)
             .setFooter({ text: "PGM BOT Mağaza Sistemi" })
             .setTimestamp();
 
-        const botMessage = await msg.reply({ embeds: [embed], components: [categoryRow] });
+        // HARİKA KISIM: Mesajı doğrudan yazılan kanalda, sadece komutu kullanan kişiye özel (ephemeral) açıyoruz!
+        const botMessage = await interaction.reply({ embeds: [embed], components: [categoryRow], ephemeral: true, fetchReply: true });
 
         const collector = botMessage.createMessageComponentCollector({ componentType: ComponentType.StringSelect, time: 180000 });
 
-        collector.on("collect", async (interaction) => {
-            if (interaction.user.id !== msg.author.id) {
-                return interaction.reply({ content: `${negative} Bu market menüsünü sadece komutu yazan kişi kullanabilir.`, ephemeral: true });
-            }
+        collector.on("collect", async (inter) => {
+            // Güvenlik kontrolü (Zaten ephemeral olduğu için başkası göremez ama tetikleyiciyi sağlama alıyoruz)
+            if (inter.user.id !== interaction.user.id) return;
 
-            // 2. AŞAMA: KATEGORİ SEÇİLİNCE EKRANI DARALTMA VE ÜRÜNLERİ MENÜYE DİZME
-            if (interaction.customId === "market_category_select") {
-                const selectedCategory = interaction.values[0]; // 'crates' veya 'kits'
+            // 2. AŞAMA: KATEGORİ SEÇİMİ
+            if (inter.customId === "market_category_select") {
+                const selectedCategory = inter.values[0];
                 const categoryItems = prices[selectedCategory];
 
                 if (!categoryItems || Object.keys(categoryItems).length === 0) {
-                    return interaction.reply({ content: `${negative} Bu kategoride şu an satılık ürün bulunmuyor.`, ephemeral: true });
+                    return inter.reply({ content: `${negative} Bu kategoride şu an satılık ürün bulunmuyor.`, ephemeral: true });
                 }
 
-                // Sadece seçilen kategorinin fiyat listesini oluşturuyoruz (Kasa seçildiyse kitler gidiyor)
-                const filteredMarketText = generateMarketText(prices, selectedCategory);
+                const filteredMarketText = generateMarketText(prices, selectedCategory, allCurrencies, invUi);
 
                 const itemMenu = new StringSelectMenuBuilder()
                     .setCustomId(`market_item_select_${selectedCategory}`)
@@ -96,29 +102,27 @@ module.exports = {
                     const res = itemChecker.exists(key);
                     if (!res) continue;
 
-                    const currencyData = cfg.getRaw("currencies", itemData.currency);
-                    const currencyName = currencyData ? currencyData.name : itemData.currency;
+                    const currencyData = allCurrencies[itemData.currency] || {};
+                    const currencyName = currencyData.name || itemData.currency;
 
                     itemMenu.addOptions(
                         new StringSelectMenuOptionBuilder()
-                            .setLabel(res.name.replace(/\*\*/g, "").replace(/<:[a-zA-Z0-9_]+:[0-9]+>\s*/g, "")) // Temiz isim
+                            .setLabel(res.name.replace(/\*\*/g, "").replace(/<:[a-zA-Z0-9_]+:[0-9]+>\s*/g, ""))
                             .setDescription(`Fiyat: ${itemData.price} ${currencyName}`)
                             .setValue(key)
                     );
                 }
 
                 const itemRow = new ActionRowBuilder().addComponents(itemMenu);
+                embed.setDescription(`Sistemdeki güncel fiyatlar aşağıdadır.\n\n${filteredMarketText}\n\nSatın almak istediğin ürünü aşağıdaki menüden seçebilirsin:`);
 
-                // Embed içeriğini sadece o kategorinin kalacağı şekilde güncelliyoruz
-                embed.setDescription(`Sistemdeki güncel fiyatlar aşağıdadır.\n\n${filteredMarketText}\n\n👇 Satın almak istediğin ürünü aşağıdaki menüden seçebilirsin:`);
-
-                await interaction.update({ embeds: [embed], components: [itemRow] });
+                await inter.update({ embeds: [embed], components: [itemRow] });
             }
 
-            // 3. AŞAMA: MİKTAR GİRİŞ MODALI
-            else if (interaction.customId.startsWith("market_item_select_")) {
-                const selectedCategory = interaction.customId.split("_")[3];
-                const selectedItemKey = interaction.values[0];
+            // 3. AŞAMA: MODAL GÖSTERİMİ
+            else if (inter.customId.startsWith("market_item_select_")) {
+                const selectedCategory = inter.customId.split("_")[3];
+                const selectedItemKey = inter.values[0];
                 const itemData = prices[selectedCategory][selectedItemKey];
 
                 const rawData = cfg.getRaw(selectedCategory, selectedItemKey);
@@ -138,12 +142,12 @@ module.exports = {
                 const modalRow = new ActionRowBuilder().addComponents(quantityInput);
                 modal.addComponents(modalRow);
 
-                await interaction.showModal(modal);
+                await inter.showModal(modal);
 
-                // 4. AŞAMA: SATIN ALMA İŞLEMİ
+                // 4. AŞAMA: MODAL SUBMIT (SATIN ALMA)
                 try {
-                    const modalSubmit = await interaction.awaitModalSubmit({
-                        filter: (i) => i.customId === `buy_modal_${selectedCategory}_${selectedItemKey}` && i.user.id === msg.author.id,
+                    const modalSubmit = await inter.awaitModalSubmit({
+                        filter: (i) => i.customId === `buy_modal_${selectedCategory}_${selectedItemKey}` && i.user.id === interaction.user.id,
                         time: 60000
                     });
 
@@ -156,8 +160,8 @@ module.exports = {
 
                     const totalPrice = itemData.price * quantity;
                     const data = loadJson("data.json");
-                    ensureUser(data, msg.author.id);
-                    const p = data[msg.author.id];
+                    ensureUser(data, interaction.user.id);
+                    const p = data[interaction.user.id];
 
                     if ((p[itemData.currency] || 0) < totalPrice) {
                         return modalSubmit.reply({ content: `${negative} Hesabında yeterli bakiye bulunmuyor! Gereken: **${totalPrice}**, Sende olan: **${p[itemData.currency] || 0}**`, ephemeral: true });
@@ -176,24 +180,26 @@ module.exports = {
                     saveJson("data.json", data);
 
                     const resInfo = itemChecker.exists(selectedItemKey);
-                    const currencyData = cfg.getRaw("currencies", itemData.currency);
-                    const currencyEmoji = currencyData?.emoji || "";
-                    const currencyName = currencyData?.name || itemData.currency;
+                    const currencyData = allCurrencies[itemData.currency] || {};
+                    const currencyEmoji = currencyData.emoji || "";
+                    const currencyName = currencyData.name || itemData.currency;
 
                     await modalSubmit.reply({
-                        content: `${check} **${msg.author.username}**, başarıyla **${quantity}x** ${resInfo.name} satın aldın!\n*Ödenen Tutar:* ${currencyEmoji} **${totalPrice}** **${currencyName}**`
+                        content: `${check} **${interaction.user.username}**, başarıyla **${quantity}x** ${resInfo.name} satın aldın!\n*Ödenen Tutar:* ${currencyEmoji} **${totalPrice}** **${currencyName}**`,
+                        ephemeral: true
                     });
 
-                    await botMessage.edit({ components: [] });
+                    // İşlem bitince menüyü temizle
+                    await interaction.editReply({ components: [] });
 
                 } catch (err) {
-                    // Zaman aşımı hatasını sönümle
+                    // Zaman aşımı toleransı
                 }
             }
         });
 
         collector.on("end", () => {
-            botMessage.edit({ components: [] }).catch(() => {});
+            interaction.editReply({ components: [] }).catch(() => {});
         });
     }
 };
