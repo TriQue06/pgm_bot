@@ -81,7 +81,7 @@ module.exports = {
         const row = new ActionRowBuilder().addComponents(menu);
 
         const initialEmbed = new EmbedBuilder()
-            .setColor(0x2B2D31)
+            .setColor(0x1183D4)
             .setTitle(`${kasaEmoji} Kasa Sistemi ve Oranlar`)
             .setDescription(`Aşağıdaki menüden seçtiğin kasanın **envanterindeki tamamı tek seferde açılacaktır**.\n\n${lootTableText.trim()}`)
             .setFooter({ text: "PGM Loot Sistemi" })
@@ -130,9 +130,8 @@ module.exports = {
                             const res = itemChecker.exists(lootItem.name);
                             if (res && res.type === "currency") {
                                 freshP[res.key] = (freshP[res.key] || 0) + amount;
-                                const curEmoji = currencies[res.key]?.emoji || "";
 
-                                if (!aggregatedRewards[res.key]) aggregatedRewards[res.key] = { name: res.name, emoji: curEmoji, amount: 0 };
+                                if (!aggregatedRewards[res.key]) aggregatedRewards[res.key] = { name: res.name, amount: 0 };
                                 aggregatedRewards[res.key].amount += amount;
                             }
                         }
@@ -145,7 +144,7 @@ module.exports = {
                                 if (!freshP.kits) freshP.kits = {};
                                 freshP.kits[res.key] = (freshP.kits[res.key] || 0) + amount;
 
-                                if (!aggregatedRewards[res.key]) aggregatedRewards[res.key] = { name: res.name, emoji: cantaEmoji, amount: 0 };
+                                if (!aggregatedRewards[res.key]) aggregatedRewards[res.key] = { name: res.name, amount: 0 };
                                 aggregatedRewards[res.key].amount += amount;
                             }
                         }
@@ -154,9 +153,8 @@ module.exports = {
                             if (res && res.type === "crate") {
                                 if (!freshP.crates) freshP.crates = {};
                                 freshP.crates[res.key] = (freshP.crates[res.key] || 0) + amount;
-                                const crEmoji = systemCrates[res.key]?.emoji || "";
 
-                                if (!aggregatedRewards[res.key]) aggregatedRewards[res.key] = { name: res.name, emoji: crEmoji, amount: 0 };
+                                if (!aggregatedRewards[res.key]) aggregatedRewards[res.key] = { name: res.name, amount: 0 };
                                 aggregatedRewards[res.key].amount += amount;
                             }
                         }
@@ -168,11 +166,11 @@ module.exports = {
 
             let finalRewardsDisplay = [];
             for (const [key, data] of Object.entries(aggregatedRewards)) {
-                finalRewardsDisplay.push(`- ${data.emoji} ${data.amount}x ${data.name}`);
+                finalRewardsDisplay.push(`- ${data.amount}x ${data.name}`);
             }
 
             const resultEmbed = new EmbedBuilder()
-                .setColor(0x2B2D31)
+                .setColor(0x1183D4)
                 .setTitle(`${check} Kasa Açılışı Tamamlandı!`)
                 .setDescription(`Tam ${amountToOpen} adet ${resInfo.name} kasasını tek seferde açtın!\n\n### Toplam Çıkan Ödüller:\n${finalRewardsDisplay.length > 0 ? finalRewardsDisplay.join("\n") : "_Şansına hiçbir şey çıkmadı..._"}`)
                 .setFooter({ text: "PGM Toplu Loot Sistemi", iconURL: msg.author.displayAvatarURL() })

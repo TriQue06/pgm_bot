@@ -6,11 +6,14 @@
     "elmas": 4
   },
   "1088510460778782831": {
-    "kits": {},
-    "crates": {
-      "bronzkasa": 1
+    "kits": {
+      "yagmaci": 206380,
+      "nisanci": 206269,
+      "madenci": 206342,
+      "altinkalp": 206657
     },
-    "pgmcoin": 0,
-    "elmas": 0
+    "crates": {},
+    "pgmcoin": 99837460,
+    "elmas": 186266338
   }
 }

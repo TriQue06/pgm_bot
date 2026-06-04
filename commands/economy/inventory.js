@@ -28,7 +28,7 @@ module.exports = {
             .join("\n") || "_Kit bulunmuyor._";
 
         const embed = new EmbedBuilder()
-            .setColor(0x2B2D31)
+            .setColor(0x1183D4)
             .setAuthor({ name: `${user.username} Envanteri`, iconURL: user.displayAvatarURL() })
             .setDescription(`## ${ui.cuzdan.emoji} ${ui.cuzdan.name}\n${walletText}\n\n## ${ui.envanterkasa.emoji} ${ui.envanterkasa.name}\n${crateText}\n\n## ${ui.canta.emoji} ${ui.canta.name}\n${kitText}`)
             .setTimestamp();

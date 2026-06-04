@@ -29,7 +29,7 @@ module.exports = {
         const row = new ActionRowBuilder().addComponents(actionBtn, listBtn);
 
         const embed = new EmbedBuilder()
-            .setColor(0x5865F2)
+            .setColor(0x1183D4)
             .setTitle(`${check} PGM BOT // Turnuva Sistemi`)
             .setDescription("Sistemde aktif bir turnuva bulunuyor!\n\nAşağıdaki butona tıklayarak **kaydını başlatabilir**, daha önce kayıt olduysan **kaydını yönetebilir** (isim/kit değiştirme, çekilme) veya turnuvaya katılanları görüntüleyebilirsin.")
             .setFooter({ text: "PGM Turnuva ve Etkinlik Sistemi" })
@@ -51,7 +51,7 @@ module.exports = {
                 }).join("\n") || "_Henüz turnuvaya katılan aktif bir oyuncu yok._";
 
                 const listEmbed = new EmbedBuilder()
-                    .setColor(0x2B2D31)
+                    .setColor(0x1183D4)
                     .setTitle(`${check} PGM Turnuvası // Güncel Katılımcı Listesi`)
                     .setDescription(listText)
                     .setFooter({ text: `Toplam Oyuncu: ${Object.keys(players).length}` })
@@ -168,7 +168,7 @@ module.exports = {
                                 }
                             }
 
-                            await manageInter.update({ content: "👇 Lütfen turnuvada kullanmak istediğin YENİ kiti seç.", components: [new ActionRowBuilder().addComponents(kitMenu)] });
+                            await manageInter.update({ content: "Lütfen turnuvada kullanmak istediğin YENİ kiti seç.", components: [new ActionRowBuilder().addComponents(kitMenu)] });
 
                             const kitSelectInter = await manageMsg.awaitMessageComponent({ filter: i => i.user.id === inter.user.id && i.customId === "edit_kit_select", time: 60000 });
                             const newKit = kitSelectInter.values[0];

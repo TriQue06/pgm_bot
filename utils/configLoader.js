@@ -3,10 +3,8 @@ const path = require('path');
 
 const FILE_PATH = path.join(__dirname, '../data/system.json');
 
-// RAM Üzerinde Saklanacak Önbellek (Cache)
 let systemCache = null;
 
-// Dosyayı belleğe yükleyen yardımcı fonksiyon (Sadece ilk açılışta veya yenilemede çalışır)
 const loadCache = () => {
     try {
         if (fs.existsSync(FILE_PATH)) {
@@ -22,16 +20,11 @@ const loadCache = () => {
 };
 
 module.exports = {
-    /**
-     * Önbelleği zorunlu olarak yeniler.
-     * system.json el ile değiştirilirse veya oyun içi bir admin komutuyla güncellenirse çağrılır.
-     */
     reload: () => {
         loadCache();
     },
 
     get: (category, key) => {
-        // Eğer bellek boşsa ilk seferlik diski oku, sonra tamamen RAM'den devam et
         if (!systemCache) loadCache();
 
         if (!systemCache[category] || !systemCache[category][key]) {

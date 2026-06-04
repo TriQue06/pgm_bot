@@ -28,7 +28,7 @@ module.exports = {
             statusData.tournamentActive = true;
             saveJson("tournament_status.json", statusData);
 
-            embed.setColor(0x2B2D31)
+            embed.setColor(0x1183D4)
                 .setTitle(`${check} PGM BOT // Sistem Güncellemesi`)
                 .setDescription("## 🔓 Turnuva Kayıtları Açıldı!\n\nOyuncular artık `!turnuva` komutunu kullanarak kayıt yaptırabilir veya envanterlerindeki kitleri seçerek katılım sağlayabilirler.")
                 .setFooter({ text: "PGM Turnuva Yönetim Sistemi" });
@@ -44,7 +44,7 @@ module.exports = {
             statusData.tournamentActive = false;
             saveJson("tournament_status.json", statusData);
 
-            embed.setColor(0x2B2D31)
+            embed.setColor(0x1183D4)
                 .setTitle(`${negative} PGM BOT // Sistem Güncellemesi`)
                 .setDescription("## 🔒 Turnuva Kayıtları Kapatıldı!\n\nTurnuva katılım aşaması sona ermiştir. Yeni kayıt veya kayıt düzenleme işlemleri bir sonraki turnuvaya kadar durdurulmuştur.")
                 .setFooter({ text: "PGM Turnuva Yönetim Sistemi" });

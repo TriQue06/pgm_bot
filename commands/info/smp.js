@@ -18,7 +18,7 @@ module.exports = {
             const status = await util.status("pgmsmp.com", 25565, { timeout: 2000 });
 
             const embed = new EmbedBuilder()
-                .setColor(0x2B2D31)
+                .setColor(0x1183D4)
                 .setTitle(`${check} PGM BOT - PGM SMP Kontrolü`)
                 .setDescription(`# ${smpEmoji}  \`pgmsmp.com\`\n${check} Online\n${cantaEmoji} Ping: ${status.roundTripLatency}ms\n${cantaEmoji} Aktif Oyuncu: ${status.players.online}`)
                 .setTimestamp();
@@ -33,7 +33,7 @@ module.exports = {
             }
         } catch (e) {
             const embed = new EmbedBuilder()
-                .setColor(0x2B2D31)
+                .setColor(0x1183D4)
                 .setTitle(`${check} PGM BOT - PGM SMP Kontrolü`)
                 .setDescription(`# ${smpEmoji}  \`pgmsmp.com\`\n${negative} Offline`)
                 .setTimestamp();

@@ -57,9 +57,9 @@ module.exports = {
             }
 
             const embed = new EmbedBuilder()
-                .setColor(0x2B2D31)
+                .setColor(0x1183D4)
                 .setTitle(`${check} Sistem Yenilendi`)
-                .setDescription(`## 🔄 Başarıyla Güncellendi!\n\n- \`system.json\` config önbelleği tamamen temizlendi ve RAM'e yeniden alındı.\n- Toplam **${totalCommands}** adet komut hafızadan temizlenip başarıyla yeniden yüklendi.`)
+                .setDescription(`## Başarıyla Güncellendi!\n\n- \`system.json\` config önbelleği tamamen temizlendi ve RAM'e yeniden alındı.\n- Toplam **${totalCommands}** adet komut hafızadan temizlenip başarıyla yeniden yüklendi.`)
                 .setTimestamp();
 
             await sent.edit({ content: null, embeds: [embed] });

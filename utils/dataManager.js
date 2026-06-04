@@ -13,7 +13,6 @@ function getFilePath(filename) {
     return path.join(DATA_PATH, filename);
 }
 
-// Okuma işlemi hızlı olması açısından senkron kalabilir ancak hata yönetimi zırh gibi sağlamlaştırıldı
 function loadJson(filename, fallback = {}) {
     const filePath = getFilePath(filename);
     if (!fs.existsSync(filePath)) {
@@ -33,8 +32,6 @@ function loadJson(filename, fallback = {}) {
     }
 }
 
-// KRİTİK DEĞİŞİKLİK: Veritabanı yazma işlemi asenkron yapıldı.
-// Bot diske yazarken diğer slash komutlarını işlemeye devam edebilir, kilitlenme (I/O Block) yaşanmaz.
 async function saveJson(filename, data) {
     const filePath = getFilePath(filename);
     try {
@@ -54,7 +51,6 @@ function ensureUser(data, userId) {
         };
     }
 
-    // Para birimlerini güvenli bir şekilde döngüye sokuyoruz
     for (const key of Object.keys(currencies)) {
         if (data[userId][key] === undefined) {
             data[userId][key] = 0;

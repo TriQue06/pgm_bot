@@ -62,7 +62,7 @@ module.exports = {
         const categoryRow = new ActionRowBuilder().addComponents(categoryMenu);
 
         const embed = new EmbedBuilder()
-            .setColor(0x2B2D31)
+            .setColor(0x1183D4)
             .setTitle(`${check} PGM BOT // Market`)
             .setDescription(`Sistemdeki güncel fiyatlar aşağıdadır.\n\n${fullMarketText}\n\nİncelemek ve satın almak istediğin kategoriyi seç:`)
             .setFooter({ text: "PGM BOT Mağaza Sistemi" })
