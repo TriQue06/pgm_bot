@@ -15,19 +15,19 @@
   },
   "kits": {
     "altinkalp": {
-      "price": 20,
+      "price": 40,
       "currency": "elmas"
     },
     "madenci": {
-      "price": 20,
+      "price": 40,
       "currency": "elmas"
     },
     "yagmaci": {
-      "price": 20,
+      "price": 40,
       "currency": "elmas"
     },
     "nisanci": {
-      "price": 20,
+      "price": 40,
       "currency": "elmas"
     }
   }

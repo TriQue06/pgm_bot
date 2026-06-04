@@ -1,19 +1,19 @@
 {
   "540610265084067851": {
     "kits": {},
-    "crates": {},
+    "crates": {
+      "bronzkasa": 1
+    },
     "pgmcoin": 0,
-    "elmas": 4
+    "elmas": 0
   },
   "1088510460778782831": {
-    "kits": {
-      "yagmaci": 206380,
-      "nisanci": 206269,
-      "madenci": 206342,
-      "altinkalp": 206657
+    "kits": {},
+    "crates": {
+      "bronzkasa": 1
     },
-    "crates": {},
-    "pgmcoin": 99837460,
-    "elmas": 186266338
+    "pgmcoin": 131,
+    "elmas": 44,
+    "lastDaily": 1780559360372
   }
 }

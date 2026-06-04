@@ -1,6 +1,6 @@
 {
   "rewards": [
-    { "type": "currency", "name": "pgmcoin", "min": 100, "max": 120, "chance": 100 },
+    { "type": "currency", "name": "pgmcoin", "min": 90, "max": 120, "chance": 100 },
     { "type": "crate", "name": "bronzkasa", "min": 1, "max": 1, "chance": 10 },
     { "type": "crate", "name": "gumuskasa", "min": 1, "max": 1, "chance": 5 },
     { "type": "crate", "name": "altinkasa", "min": 1, "max": 1, "chance": 2 }
