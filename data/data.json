@@ -1,19 +1,14 @@
 {
-  "540610265084067851": {
+  "1088510460778782831": {
     "kits": {},
-    "crates": {
-      "bronzkasa": 1
-    },
+    "crates": {},
     "pgmcoin": 0,
     "elmas": 0
   },
-  "1088510460778782831": {
+  "540610265084067851": {
     "kits": {},
-    "crates": {
-      "bronzkasa": 1
-    },
-    "pgmcoin": 131,
-    "elmas": 44,
-    "lastDaily": 1780559360372
+    "crates": {},
+    "pgmcoin": 0,
+    "elmas": 0
   }
 }

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>PGM Bot Veri Temizleyici</title>
+</head>
+<body>
+    <h2>PGM Bot Data.json Temizleyici</h2>
+    <input type="file" id="fileInput" accept=".json">
+    <button onclick="processData()">Dosyayı İşle ve İndir</button>
+
+    <script>
+        function processData() {
+            const fileInput = document.getElementById('fileInput');
+            if (!fileInput.files.length) return alert("Lütfen bir JSON dosyası seçin.");
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = JSON.parse(e.target.result);
+                
+                for (let userId in data) {
+                    data[userId].kits = {};
+                    data[userId].crates = {};
+                    data[userId].pgmcoin = 0;
+                    data[userId].elmas = 0;
+                    delete data[userId].lastDaily;
+                }
+
+                const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'data.json';
+                a.click();
+            };
+            reader.readAsText(fileInput.files[0]);
+        }
+    </script>
+</body>
+</html>
