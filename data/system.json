@@ -15,10 +15,6 @@
     "altinkasa": { "name": "Altın Kasa", "emoji": "<:altinkasa:1469400726043361443>" }
   },
   "kits": {
-    "altinkalp": { "name": "Altın Kalp Kiti", "emoji": "<:kit:1469016921478266880>" },
-    "madenci": { "name": "Madenci Kiti", "emoji": "<:kit:1469016921478266880>" },
-    "yagmaci": { "name": "Yağmacı Kiti", "emoji": "<:kit:1469016921478266880>" },
-    "nisanci": { "name": "Nişancı Kiti", "emoji": "<:kit:1469016921478266880>" }
   },
   "ui": {
     "check": { "emoji": "<:check:1469662282278764638>" },

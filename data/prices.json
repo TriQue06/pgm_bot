@@ -14,21 +14,5 @@
     }
   },
   "kits": {
-    "altinkalp": {
-      "price": 40,
-      "currency": "elmas"
-    },
-    "madenci": {
-      "price": 40,
-      "currency": "elmas"
-    },
-    "yagmaci": {
-      "price": 40,
-      "currency": "elmas"
-    },
-    "nisanci": {
-      "price": 40,
-      "currency": "elmas"
-    }
   }
 }

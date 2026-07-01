@@ -49,18 +49,20 @@ module.exports = {
         }
 
         if (isEveryone) {
-            const allUserIds = Object.keys(data);
-            if (allUserIds.length === 0) {
-                return msg.reply(`${negative} Veri tabanında kayıtlı hiçbir kullanıcı bulunamadı.`);
+            const members = await msg.guild.members.fetch();
+            const humanMembers = members.filter(m => !m.user.bot);
+
+            if (humanMembers.size === 0) {
+                return msg.reply(`${negative} Sunucuda hiçbir üye bulunamadı.`);
             }
 
-            for (const id of allUserIds) {
+            for (const [id] of humanMembers) {
                 ensureUser(data, id);
                 applyDataChange(data[id]);
             }
 
             await saveJson("data.json", data);
-            return msg.reply(`${check} Veri tabanındaki **tüm kullanıcıların (${allUserIds.length} kişi)** **${item.name}** bilgisi güncellendi.`);
+            return msg.reply(`${check} Sunucudaki **tüm üyelerin (${humanMembers.size} kişi)** **${item.name}** bilgisi güncellendi.`);
         } else {
             ensureUser(data, user.id);
             applyDataChange(data[user.id]);

@@ -16,7 +16,8 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMembers
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildVoiceStates
     ]
 });
 
@@ -70,6 +71,21 @@ client.on("messageCreate", async (msg) => {
     } catch (error) {
         console.error(error);
         msg.reply("Bir hata oluştu.");
+    }
+});
+
+client.on("interactionCreate", async (interaction) => {
+    if (!interaction.isStringSelectMenu()) return;
+    if (interaction.customId !== "ses_secim") return;
+
+    const sesCommand = client.commands.get("ses");
+    if (sesCommand?.handleSelect) {
+        try {
+            await sesCommand.handleSelect(client, interaction);
+        } catch (err) {
+            console.error(err);
+            if (!interaction.replied) interaction.reply({ content: "Bir hata oluştu.", ephemeral: true });
+        }
     }
 });
 

@@ -1,20 +1,180 @@
 {
   "1088510460778782831": {
     "kits": {},
-    "crates": {},
-    "pgmcoin": 0,
-    "elmas": 0
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 471,
+    "elmas": 10,
+    "lastDaily": 1782415754194
+  },
+  "212180576063455232": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "332171946609606658": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "418478227074580490": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "434950328761450498": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "490487231807619095": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "538781138974408866": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
   },
   "540610265084067851": {
     "kits": {},
-    "crates": {},
-    "pgmcoin": 0,
-    "elmas": 0
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 495,
+    "elmas": 10,
+    "lastDaily": 1782310755747
+  },
+  "600345920252543016": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "633315698147459073": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "637590744135106560": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "675677460745945092": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 477,
+    "elmas": 14,
+    "lastDaily": 1782415796780
+  },
+  "776391823463022622": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "804396517539971152": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "852586780846325781": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "852597571204677663": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "906834468189401118": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
   },
   "1018515621538955264": {
     "kits": {},
     "crates": {},
-    "pgmcoin": 0,
-    "elmas": 0
+    "pgmcoin": 1209,
+    "elmas": 27,
+    "lastDaily": 1782759848010
+  },
+  "1173643493332221955": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "1238562259752714240": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "1259444698242617365": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
+  },
+  "1336041956547231855": {
+    "kits": {},
+    "crates": {
+      "altinkasa": 1
+    },
+    "pgmcoin": 380,
+    "elmas": 10
   }
 }
