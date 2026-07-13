@@ -75,17 +75,32 @@ client.on("messageCreate", async (msg) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-    if (!interaction.isStringSelectMenu()) return;
-    if (interaction.customId !== "ses_secim") return;
-
-    const sesCommand = client.commands.get("ses");
-    if (sesCommand?.handleSelect) {
-        try {
-            await sesCommand.handleSelect(client, interaction);
-        } catch (err) {
-            console.error(err);
-            if (!interaction.replied) interaction.reply({ content: "Bir hata oluştu.", ephemeral: true });
+    if (interaction.isStringSelectMenu() && interaction.customId === "ses_secim") {
+        const sesCommand = client.commands.get("ses");
+        if (sesCommand?.handleSelect) {
+            try {
+                await sesCommand.handleSelect(client, interaction);
+            } catch (err) {
+                console.error(err);
+                if (!interaction.replied && !interaction.deferred)
+                    interaction.reply({ content: "Bir hata oluştu.", ephemeral: true });
+            }
         }
+        return;
+    }
+
+    if (interaction.isButton() && interaction.customId === "resume_music") {
+        const pauseCommand = client.commands.get("pause");
+        if (pauseCommand?.handleButton) {
+            try {
+                await pauseCommand.handleButton(client, interaction);
+            } catch (err) {
+                console.error(err);
+                if (!interaction.replied && !interaction.deferred)
+                    interaction.reply({ content: "Bir hata oluştu.", ephemeral: true });
+            }
+        }
+        return;
     }
 });
 

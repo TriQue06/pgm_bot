@@ -5,11 +5,11 @@ const {
     createAudioPlayer,
     createAudioResource,
     AudioPlayerStatus,
-    getVoiceConnection
 } = require("@discordjs/voice");
 const { StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder } = require("discord.js");
 const ffmpegPath = require("ffmpeg-static");
 const cfg = require("../../utils/configLoader");
+const { states } = require("../../utils/voiceState");
 
 process.env.FFMPEG_PATH = ffmpegPath;
 
@@ -18,6 +18,33 @@ const MUSICS_DIR = path.join(__dirname, "../../musics");
 function getMusicFiles() {
     if (!fs.existsSync(MUSICS_DIR)) return [];
     return fs.readdirSync(MUSICS_DIR).filter(f => f.endsWith(".mp3"));
+}
+
+function playNext(guildId) {
+    const state = states.get(guildId);
+    if (!state) return;
+
+    if (state.loop && state.currentFile) {
+        const resource = createAudioResource(state.currentFile);
+        state.player.play(resource);
+        return;
+    }
+
+    if (state.queue.length > 0) {
+        const next = state.queue.shift();
+        state.currentFile = next.filePath;
+        state.trackName = next.trackName;
+        const resource = createAudioResource(next.filePath);
+        state.player.play(resource);
+        return;
+    }
+
+    // kuyruk bitti, kanalda bekle
+}
+
+function setupPlayer(player, guildId) {
+    player.on(AudioPlayerStatus.Idle, () => playNext(guildId));
+    player.on("error", (err) => console.error("Ses oynatma hatası:", err));
 }
 
 module.exports = {
@@ -30,7 +57,6 @@ module.exports = {
         const negative = ui.negative?.emoji || "❌";
 
         const files = getMusicFiles();
-
         if (files.length === 0) {
             return msg.reply(`${negative} \`musics/\` klasöründe hiç MP3 bulunamadı.`);
         }
@@ -40,7 +66,7 @@ module.exports = {
             return msg.reply(`${negative} Önce bir ses kanalına gir.`);
         }
 
-        const options = files.map((file, i) =>
+        const options = files.map(file =>
             new StringSelectMenuOptionBuilder()
                 .setLabel(path.basename(file, ".mp3"))
                 .setValue(file)
@@ -66,14 +92,13 @@ module.exports = {
 
         const fileName = interaction.values[0];
         const filePath = path.join(MUSICS_DIR, fileName);
+        const trackName = path.basename(fileName, ".mp3");
 
         if (!fs.existsSync(filePath)) {
             return interaction.reply({ content: `${negative} Dosya bulunamadı.`, ephemeral: true });
         }
 
-        const member = interaction.guild.members.cache.get(interaction.user.id)
-            || await interaction.guild.members.fetch(interaction.user.id);
-
+        const member = await interaction.guild.members.fetch(interaction.user.id);
         const voiceChannel = member.voice.channel;
         if (!voiceChannel) {
             return interaction.reply({ content: `${negative} Önce bir ses kanalına gir.`, ephemeral: true });
@@ -81,35 +106,67 @@ module.exports = {
 
         await interaction.deferUpdate();
 
-        const existingConnection = getVoiceConnection(interaction.guild.id);
-        if (existingConnection) existingConnection.destroy();
+        const guildId = interaction.guild.id;
+        const existingState = states.get(guildId);
+        const isActive = existingState &&
+            (existingState.player.state.status === AudioPlayerStatus.Playing ||
+             existingState.player.state.status === AudioPlayerStatus.Paused);
 
-        const connection = joinVoiceChannel({
-            channelId: voiceChannel.id,
-            guildId: interaction.guild.id,
-            adapterCreator: interaction.guild.voiceAdapterCreator
+        if (isActive) {
+            existingState.queue.push({ filePath, trackName });
+            const pos = existingState.queue.length;
+            await interaction.editReply({
+                content: `${check} **${trackName}** kuyruğa eklendi. (Sıra: ${pos})`,
+                components: []
+            });
+            return;
+        }
+
+        let connection;
+        let player;
+
+        if (existingState) {
+            existingState.player.stop();
+            connection = existingState.connection;
+            player = existingState.player;
+
+            if (connection.joinConfig.channelId !== voiceChannel.id) {
+                connection.destroy();
+                connection = joinVoiceChannel({
+                    channelId: voiceChannel.id,
+                    guildId,
+                    adapterCreator: interaction.guild.voiceAdapterCreator
+                });
+                player = createAudioPlayer();
+                setupPlayer(player, guildId);
+                connection.subscribe(player);
+            }
+        } else {
+            connection = joinVoiceChannel({
+                channelId: voiceChannel.id,
+                guildId,
+                adapterCreator: interaction.guild.voiceAdapterCreator
+            });
+            player = createAudioPlayer();
+            setupPlayer(player, guildId);
+            connection.subscribe(player);
+        }
+
+        states.set(guildId, {
+            connection,
+            player,
+            currentFile: filePath,
+            trackName,
+            loop: false,
+            queue: []
         });
 
         const resource = createAudioResource(filePath);
-        const player = createAudioPlayer();
-
         player.play(resource);
-        connection.subscribe(player);
-
-        const trackName = path.basename(fileName, ".mp3");
 
         await interaction.editReply({
             content: `${check} **Şu an çalıyor:** ${trackName}`,
             components: []
-        });
-
-        player.on(AudioPlayerStatus.Idle, () => {
-            connection.destroy();
-        });
-
-        player.on("error", (err) => {
-            console.error("Ses oynatma hatası:", err);
-            connection.destroy();
         });
     }
 };
